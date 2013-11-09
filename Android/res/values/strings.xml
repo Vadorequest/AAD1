@@ -3,11 +3,12 @@
 
     <string name="app_name">Wifi Controlled Car</string>
     <string name="action_settings">Settings</string>
-    <string name="devices">Devices:</string>
+    <string name="devices">Network:</string>
     <string name="wifi">Wifi</string>
     <string name="on">ON</string>
     <string name="off">OFF</string>
     <string name="refresh">Refresh</string>
     <string name="photoDescription">Last image received from the car</string>
+    <string name="networkLbl">Looking for network name...</string>
 
 </resources>

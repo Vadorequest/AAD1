@@ -1,24 +1,41 @@
 package com.iha.wcc;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import com.iha.wcc.session.CarSession;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnHoverListener;
 import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 public class CarActivity extends Activity {
-
+	/*
+	 * Static instance of itself.
+	 */
 	private static Context context;
+	
+	/*
+	 * Socket connection between the application and the car.
+	 */
+	private Socket socket;
+	private DataOutputStream dataOutputStream;
 	
 	// View components.
 	private ImageView photo;
@@ -33,8 +50,7 @@ public class CarActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_car);
-		
+		setContentView(R.layout.activity_car);		
 		
 		// Define a static context. Useful for the anonymous events.
 		context = getApplicationContext();
@@ -46,7 +62,7 @@ public class CarActivity extends Activity {
 		this.initializeListeners();
 		
 		// Initialize the car and the application.
-		this.initializeCar(Integer.parseInt((String)getIntent().getExtras().get("id")));
+		this.initializeCar((String)getIntent().getExtras().get("name"), (String)getIntent().getExtras().get("ip"));
 	}
 
 	/**
@@ -141,10 +157,22 @@ public class CarActivity extends Activity {
 	/**
 	 * Initialize the car, load the local phone settings and send them to the car.
 	 * Save in session useful information about the car.
-	 * @param id 
+	 * @param ip IP address of the car.
+	 * @param port Port used to communicate with the device.
 	 */
-	private void initializeCar(int id){
-		
+	private void initializeCar(String name, String ip){
+		// TODO I don't have the port of the device, maybe we should defined it in "hard", easier.
+		try {
+			this.socket = new Socket(ip, 5555);
+			this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+			
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			Log.e("Socket", "Unable to start a socket connection.");
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.e("Socket", "Unable to start a socket connection.");
+		}
 	}
 	
 	/**
@@ -173,7 +201,6 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go to the right.
 	 */
 	private void goRight(){
-		
 		Toast.makeText(context, "Turning right!", Toast.LENGTH_SHORT).show();
 	}
 	
