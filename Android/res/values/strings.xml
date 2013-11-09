@@ -8,5 +8,6 @@
     <string name="on">ON</string>
     <string name="off">OFF</string>
     <string name="refresh">Refresh</string>
+    <string name="photoDescription">Last image received from the car</string>
 
 </resources>

@@ -29,7 +29,8 @@
         <activity 
             android:name=".CarActivity"
             android:screenOrientation="landscape" 
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
     </application>
 

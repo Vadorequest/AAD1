@@ -8,6 +8,81 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".CarActivity" >
 
-    
+    <!-- Load a default image. -->
+    <ImageView
+        android:id="@+id/photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/photoDescription"
+        android:src="@drawable/ic_launcher" />
+
+    <ImageButton
+        android:id="@+id/pictureBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/photo"
+        android:layout_alignLeft="@+id/photo"
+        android:background="@drawable/round_button_white"
+        android:src="@drawable/ic_take_picture" />
+
+    <ImageButton
+        android:id="@+id/honkBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/photo"
+        android:layout_alignRight="@+id/photo"
+        android:background="@drawable/round_button_white"
+        android:src="@drawable/ic_action_honk" />
+
+    <ImageButton
+        android:id="@+id/settingsBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignRight="@+id/photo"
+        android:layout_alignTop="@+id/photo"
+        android:background="@drawable/round_button_white"
+        android:src="@drawable/ic_action_settings" />
+
+    <ImageButton
+        android:id="@+id/goForwardBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/photo"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/round_button_white"
+        android:src="@drawable/ic_go_forward" />
+
+    <ImageButton
+        android:id="@+id/goBackwardBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/goForwardBtn"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/round_button_white"
+        android:src="@drawable/ic_go_backward" />
+
+    <ImageButton
+        android:id="@+id/goRightBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="42dp"
+        android:layout_toLeftOf="@+id/honkBtn"
+        android:background="@drawable/round_button_white"
+        android:src="@drawable/ic_go_right" />
+
+    <ImageButton
+        android:id="@+id/goLeftBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/goRightBtn"
+        android:layout_marginLeft="42dp"
+        android:layout_toRightOf="@+id/pictureBtn"
+        android:background="@drawable/round_button_white"
+        android:src="@drawable/ic_go_left" />
 
 </RelativeLayout>

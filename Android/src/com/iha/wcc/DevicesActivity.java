@@ -1,24 +1,21 @@
 package com.iha.wcc;
 
-import com.iha.wcc.DeviceFragment.OnFragmentInteractionListener;
-
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ListView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import com.iha.wcc.DeviceFragment.OnFragmentInteractionListener;
 
 public class DevicesActivity extends FragmentActivity implements OnFragmentInteractionListener{
 
@@ -26,9 +23,9 @@ public class DevicesActivity extends FragmentActivity implements OnFragmentInter
 	
 	private WifiManager wifiManager;
 	
-	// View elements.
+	// View components.
 	private ToggleButton wifiBtn;
-	private Button refreshList;
+	private ImageButton refreshList;
 	private DeviceFragment devices;
 	
 	@Override
@@ -36,17 +33,44 @@ public class DevicesActivity extends FragmentActivity implements OnFragmentInter
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_devices);
 		
-		// Define a static context.
+		// Define a static context. Useful for the anonymous events.
 		context = getApplicationContext();
 		
 		// Initialize services instances.
-		this.wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+		this.initializeServices();
 		
-		// Initialize view objects.
+		// Initialize view components.
+		this.initializeComponents();
+
+		// Initialize WIFI and display alert if not enabled.
+		this.initializeWifi();		
+
+		// Bind listeners once all components are initialized.
+		this.initializeListeners();
+	}
+	
+	/**
+	 * Initialize all services.
+	 */
+	private void initializeServices() {
+		// WIFI service manager.
+		this.wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+	}
+
+	/**
+	 * Initialize all view components.
+	 */
+	private void initializeComponents() {
 		this.wifiBtn = (ToggleButton) findViewById(R.id.wifiBtn);
-		this.refreshList = (Button) findViewById(R.id.refreshList);
+		this.refreshList = (ImageButton) findViewById(R.id.refreshList);
 		this.devices = (DeviceFragment) getSupportFragmentManager().findFragmentById(R.id.devices);
-				
+	}
+	
+	/**
+	 * Display a Toast if WIFI disabled.
+	 * Set the initial value of the wifi toggle button.
+	 */
+	private void initializeWifi() {
 		boolean wifiEnable = wifiManager.isWifiEnabled();
 		if(!wifiEnable){
 			// Display a message if WIFI is disabled.
@@ -54,16 +78,13 @@ public class DevicesActivity extends FragmentActivity implements OnFragmentInter
 		}
 		
 		// Set the value of the ToggleButton.
-		this.wifiBtn.setChecked(wifiEnable);		
-
-		// Bind listeners.
-		this.bindListeners();
+		this.wifiBtn.setChecked(wifiEnable);
 	}
-	
+
 	/**
 	 * Bind all button listeners. (called during the initialization)
 	 */
-	private void bindListeners(){
+	private void initializeListeners(){
 		// On value change, enable or disable the WIFI.
 		this.wifiBtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 	        @Override
@@ -92,10 +113,21 @@ public class DevicesActivity extends FragmentActivity implements OnFragmentInter
 
 	@Override
 	public void onFragmentInteraction(String id) {
-		Log.i("Item clicked:", id);
+		// Load the Car activity.
+		Intent intent = new Intent(DevicesActivity.this, CarActivity.class); 
+		intent.putExtra("id", id);
+		
+        startActivity(intent);
+        
+        // Display a message to the user.
 		Toast.makeText(this, "Connection processing with the device #"+id, Toast.LENGTH_LONG).show();
 	}
 	
+	/**
+	 * Return a string depending of the WIFI status.
+	 * @param enabled
+	 * @return String - Message to display.
+	 */
 	private static String getNotificationWifi(boolean enabled){
 		return enabled ? "WIFI starting, please refresh once you will be connected." : "Please, enable the WIFI to get a list of available devices!";
 	}

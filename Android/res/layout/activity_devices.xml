@@ -15,19 +15,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:text="@string/wifi"
-        android:textOn="@string/on"
-        android:textOff="@string/off" />
-
-    <TextView
-        android:id="@+id/wifiLbl"
-        android:layout_width="wrap_content"
-        android:layout_height="18dp"
-        android:layout_alignBaseline="@+id/wifiBtn"
-        android:layout_alignBottom="@+id/wifiBtn"
-        android:layout_marginRight="14dp"
-        android:layout_toLeftOf="@+id/wifiBtn"
-        android:text="@string/wifi"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textOff="@string/off"
+        android:textOn="@string/on" />
 
     <fragment
         android:id="@+id/devices"
@@ -39,20 +28,31 @@
         android:layout_alignRight="@+id/wifiBtn"
         android:layout_below="@+id/wifiBtn" />
 
-    <Button
+    <ImageButton
         android:id="@+id/refreshList"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_above="@+id/devices"
+        android:layout_marginLeft="17dp"
+        android:layout_toRightOf="@+id/devicesLbl"
+        android:background="@drawable/selector_round_button_transparent"
+        android:src="@drawable/ic_action_refresh" />
+
+    <ImageView
+        android:id="@+id/wifiImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/wifiLbl"
-        android:layout_marginLeft="34dp"
-        android:layout_toRightOf="@+id/devicesLbl"
-        android:text="@string/refresh" />
+        android:layout_alignBottom="@+id/wifiBtn"
+        android:layout_alignTop="@+id/wifiBtn"
+        android:layout_toLeftOf="@+id/wifiBtn"
+        android:src="@drawable/ic_wifi" />
 
     <TextView
         android:id="@+id/devicesLbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/devices"
+        android:layout_alignBaseline="@+id/wifiBtn"
+        android:layout_alignBottom="@+id/wifiBtn"
         android:layout_alignParentLeft="true"
         android:text="@string/devices"
         android:textAppearance="?android:attr/textAppearanceLarge"

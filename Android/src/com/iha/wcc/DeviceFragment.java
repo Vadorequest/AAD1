@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.iha.wcc.data.DeviceItem;
+import com.iha.wcc.data.Device;
 
 
 /**
@@ -22,8 +22,8 @@ import com.iha.wcc.data.DeviceItem;
 public class DeviceFragment extends ListFragment {
 
 	private OnFragmentInteractionListener mListener;
-	private ArrayAdapter<DeviceItem> adapter;
-	private List<DeviceItem> devices;
+	private ArrayAdapter<Device> adapter;
+	private List<Device> devices;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the fragment (e.g. upon screen orientation changes).
@@ -36,7 +36,7 @@ public class DeviceFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 		
 		// Define the adapter.
-		this.adapter = new ArrayAdapter<DeviceItem>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
+		this.adapter = new ArrayAdapter<Device>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
 		
 		// Refresh the list content, that will define the adapter content.
 		this.refreshList();		
@@ -75,10 +75,10 @@ public class DeviceFragment extends ListFragment {
 	 * Refresh the devices variable by loading devices from network and refresh the view.
 	 */
 	public void refreshList(){
-		devices = new ArrayList<DeviceItem>();
+		devices = new ArrayList<Device>();
 		// TODO Load these data by the network.
-		devices.add(new DeviceItem((devices.size()+1)+"", "Car #123"));
-		devices.add(new DeviceItem((devices.size()+1)+"", "Phone xxx"));
+		devices.add(new Device((devices.size()+1)+"", "Car #123"));
+		devices.add(new Device((devices.size()+1)+"", "Phone xxx"));
 		
 		// Clear, add all and notify the view.
 		adapter.clear();
