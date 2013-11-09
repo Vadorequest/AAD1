@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".DevicesActivity" >
+
+    <ToggleButton
+        android:id="@+id/wifiBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/wifi"
+        android:textOn="@string/on"
+        android:textOff="@string/off" />
+
+    <TextView
+        android:id="@+id/wifiLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_alignBaseline="@+id/wifiBtn"
+        android:layout_alignBottom="@+id/wifiBtn"
+        android:layout_marginRight="14dp"
+        android:layout_toLeftOf="@+id/wifiBtn"
+        android:text="@string/wifi"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <fragment
+        android:id="@+id/devices"
+        android:name="com.iha.wcc.DeviceFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/devicesLbl"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/wifiBtn"
+        android:layout_below="@+id/wifiBtn" />
+
+    <Button
+        android:id="@+id/refreshList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/wifiLbl"
+        android:layout_marginLeft="34dp"
+        android:layout_toRightOf="@+id/devicesLbl"
+        android:text="@string/refresh" />
+
+    <TextView
+        android:id="@+id/devicesLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/devices"
+        android:layout_alignParentLeft="true"
+        android:text="@string/devices"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold" />
+
+</RelativeLayout>
