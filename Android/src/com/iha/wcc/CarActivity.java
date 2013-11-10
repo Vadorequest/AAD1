@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import com.iha.wcc.session.CarSession;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -38,7 +37,7 @@ public class CarActivity extends Activity {
 	private DataOutputStream dataOutputStream;
 	
 	// View components.
-	private ImageView photo;
+	private ImageView cameraContent;
 	private ImageButton pictureBtn;
 	private ImageButton honkBtn;
 	private ImageButton settingsBtn;
@@ -62,14 +61,15 @@ public class CarActivity extends Activity {
 		this.initializeListeners();
 		
 		// Initialize the car and the application.
-		this.initializeCar((String)getIntent().getExtras().get("name"), (String)getIntent().getExtras().get("ip"));
+		Bundle extras = getIntent().getExtras();
+		this.initializeCar((String)extras.get("name"), (String)extras.get("ip"));
 	}
 
 	/**
 	 * Initialize all view components.
 	 */
 	private void initializeComponents() {
-		this.photo = (ImageView) findViewById(R.id.photo);
+		this.cameraContent = (ImageView) findViewById(R.id.cameraContent);
 		this.pictureBtn = (ImageButton) findViewById(R.id.pictureBtn);
 		this.honkBtn = (ImageButton) findViewById(R.id.honkBtn);
 		this.settingsBtn = (ImageButton) findViewById(R.id.settingsBtn);
@@ -162,17 +162,17 @@ public class CarActivity extends Activity {
 	 */
 	private void initializeCar(String name, String ip){
 		// TODO I don't have the port of the device, maybe we should defined it in "hard", easier.
-		try {
-			this.socket = new Socket(ip, 5555);
-			this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
-			
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			Log.e("Socket", "Unable to start a socket connection.");
-		} catch (IOException e) {
-			e.printStackTrace();
-			Log.e("Socket", "Unable to start a socket connection.");
-		}
+//		try {
+//			this.socket = new Socket(ip, 5555);
+//			this.dataOutputStream = new DataOutputStream(socket.getOutputStream());// Can't be called in the MAIN thread: http://stackoverflow.com/questions/6343166/android-os-networkonmainthreadexception
+//			
+//		} catch (UnknownHostException e) {
+//			e.printStackTrace();
+//			Log.e("Socket", "Unable to start a socket connection.");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			Log.e("Socket", "Unable to start a socket connection.");
+//		}
 	}
 	
 	/**

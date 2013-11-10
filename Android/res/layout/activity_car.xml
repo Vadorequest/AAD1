@@ -10,7 +10,7 @@
 
     <!-- Load a default image. -->
     <ImageView
-        android:id="@+id/photo"
+        android:id="@+id/cameraContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -24,8 +24,8 @@
         android:id="@+id/pictureBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignBottom="@+id/photo"
-        android:layout_alignLeft="@+id/photo"
+        android:layout_alignBottom="@+id/cameraContent"
+        android:layout_alignLeft="@+id/cameraContent"
         android:background="@drawable/round_button_white"
         android:src="@drawable/ic_take_picture" />
 
@@ -33,8 +33,8 @@
         android:id="@+id/honkBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignBottom="@+id/photo"
-        android:layout_alignRight="@+id/photo"
+        android:layout_alignBottom="@+id/cameraContent"
+        android:layout_alignRight="@+id/cameraContent"
         android:background="@drawable/round_button_white"
         android:src="@drawable/ic_action_honk" />
 
@@ -42,8 +42,8 @@
         android:id="@+id/settingsBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignRight="@+id/photo"
-        android:layout_alignTop="@+id/photo"
+        android:layout_alignRight="@+id/cameraContent"
+        android:layout_alignTop="@+id/cameraContent"
         android:background="@drawable/round_button_white"
         android:src="@drawable/ic_action_settings" />
 
@@ -51,7 +51,7 @@
         android:id="@+id/goForwardBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignTop="@+id/photo"
+        android:layout_alignTop="@+id/cameraContent"
         android:layout_centerHorizontal="true"
         android:background="@drawable/round_button_white"
         android:src="@drawable/ic_go_forward" />

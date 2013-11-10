@@ -3,6 +3,9 @@ package com.iha.wcc;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iha.wcc.data.Network;
+import com.iha.wcc.interfaces.fragment.INetworkFragmentInteractionListener;
+
 import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
@@ -13,7 +16,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.iha.wcc.data.Network;
 
 
 /**
@@ -24,7 +26,7 @@ import com.iha.wcc.data.Network;
  */
 public class NetworkFragment extends ListFragment {
 	private WifiManager wifiManager;
-	private OnFragmentInteractionListener mListener;
+	private INetworkFragmentInteractionListener mListener;
 	private ArrayAdapter<Network> adapter;
 	private List<Network> networks;
 
@@ -51,7 +53,7 @@ public class NetworkFragment extends ListFragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			mListener = (OnFragmentInteractionListener) activity;
+			mListener = (INetworkFragmentInteractionListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
 		}
@@ -70,7 +72,7 @@ public class NetworkFragment extends ListFragment {
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-			mListener.onFragmentInteraction(this.networks.get(position).name, this.networks.get(position).ip);
+			mListener.onNetworkFragmentInteraction(this.networks.get(position).name, this.networks.get(position).ip);
 		}
 	}
 	
@@ -96,17 +98,6 @@ public class NetworkFragment extends ListFragment {
 	 */
 	public void refreshWifiManager(){
 		this.wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-	}
-
-	/**
-	 * This interface must be implemented by activities that contain this fragment to allow an interaction in this fragment to be communicated to the activity
-	 * and potentially other fragments contained in that activity.
-	 * <p>
-	 * See the Android Training lesson <a href= "http://developer.android.com/training/basics/fragments/communicating.html" >Communicating with Other
-	 * Fragments</a> for more information.
-	 */
-	public interface OnFragmentInteractionListener {
-		public void onFragmentInteraction(String name, String ip);
 	}
 
 }

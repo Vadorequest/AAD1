@@ -1,26 +1,24 @@
 package com.iha.wcc;
 
+
+import com.iha.wcc.interfaces.fragment.INetworkFragmentInteractionListener;
+
 import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.format.Formatter;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.iha.wcc.NetworkFragment.OnFragmentInteractionListener;
 
-public class MainActivity extends FragmentActivity implements OnFragmentInteractionListener{
+public class MainActivity extends FragmentActivity implements INetworkFragmentInteractionListener{
 
 	/*
 	 * Static instance of itself.
@@ -33,12 +31,12 @@ public class MainActivity extends FragmentActivity implements OnFragmentInteract
 	// View components.
 	private ToggleButton wifiBtn;
 	private ImageButton refreshList;
-	private NetworkFragment devices;
+	private NetworkFragment networks;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_devices);
+		setContentView(R.layout.activity_main);
 		
 		// Define a static context. Useful for the anonymous events.
 		context = getApplicationContext();
@@ -70,7 +68,7 @@ public class MainActivity extends FragmentActivity implements OnFragmentInteract
 	private void initializeComponents() {
 		this.wifiBtn = (ToggleButton) findViewById(R.id.wifiBtn);
 		this.refreshList = (ImageButton) findViewById(R.id.refreshList);
-		this.devices = (NetworkFragment) getSupportFragmentManager().findFragmentById(R.id.devices);
+		this.networks = (NetworkFragment) getSupportFragmentManager().findFragmentById(R.id.devices);
 	}
 	
 	/**
@@ -112,16 +110,16 @@ public class MainActivity extends FragmentActivity implements OnFragmentInteract
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.devices, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
 	@Override
-	public void onFragmentInteraction(String name, String ip) {
+	public void onNetworkFragmentInteraction(String name, String ip) {
 		// Load the Car activity.
 		Intent intent = new Intent(MainActivity.this, CarActivity.class); 
-		intent.putExtra("ip", ip);
 		intent.putExtra("name", name);
+		intent.putExtra("ip", ip);
 		
         startActivity(intent);
         
@@ -142,7 +140,7 @@ public class MainActivity extends FragmentActivity implements OnFragmentInteract
 	 * Refresh the list.
 	 */
 	private void doRefreshList() {
-		devices.refreshList();
+		networks.refreshList();
 		Toast.makeText(context, "Devices list refreshed.", Toast.LENGTH_SHORT).show();
 	}
 
