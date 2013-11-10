@@ -179,7 +179,7 @@ public class CarActivity extends Activity {
 	 */
 	private void goForward(){
 		new RequestTask().execute("http://192.168.240.1/arduino/digital/13/1");
-		//CarSocket.execute("digital/13/1");
+		//CarSocket.execute("forward");
 	}
 	
 	/**
@@ -187,7 +187,7 @@ public class CarActivity extends Activity {
 	 */
 	private void goBackward(){
 		new RequestTask().execute("http://192.168.240.1/arduino/digital/13/0");
-		//CarSocket.execute("digital/13/0");
+		//CarSocket.execute("back");
 	}
 	
 	/**
