@@ -1,7 +1,8 @@
 package com.iha.wcc;
 
 
-import com.iha.wcc.interfaces.fragment.INetworkFragmentInteractionListener;
+import com.iha.wcc.fragment.network.INetworkFragmentInteractionListener;
+import com.iha.wcc.fragment.network.NetworkFragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +24,7 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 	/*
 	 * Static instance of itself.
 	 */
-	private static Context context;
+	public static Context context;
 	
 	// Services.
 	private WifiManager wifiManager;
@@ -72,18 +73,11 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 	}
 	
 	/**
-	 * Display a Toast if WIFI disabled.
 	 * Set the initial value of the wifi toggle button.
 	 */
 	private void initializeWifi() {
-		boolean wifiEnable = wifiManager.isWifiEnabled();
-		if(!wifiEnable){
-			// Display a message if WIFI is disabled.
-			Toast.makeText(context, getNotificationWifi(wifiEnable), Toast.LENGTH_LONG).show();
-		}
-		
 		// Set the value of the ToggleButton.
-		this.wifiBtn.setChecked(wifiEnable);
+		this.wifiBtn.setChecked(this.wifiManager.isWifiEnabled());
 	}
 
 	/**
@@ -132,7 +126,7 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 	 * @param enabled
 	 * @return String - Message to display.
 	 */
-	private static String getNotificationWifi(boolean enabled){
+	public static String getNotificationWifi(boolean enabled){
 		return enabled ? "WIFI starting, please refresh once you will be connected." : "Please, enable the WIFI to connect to the car!";
 	}
 
@@ -140,8 +134,7 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 	 * Refresh the list.
 	 */
 	private void doRefreshList() {
-		networks.refreshList();
-		Toast.makeText(context, "Devices list refreshed.", Toast.LENGTH_SHORT).show();
+		networks.refreshList(!this.wifiBtn.isChecked());
 	}
 
 	/**
@@ -150,7 +143,11 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 	 */
 	private void doToggleWifi(boolean isChecked) {
 		wifiManager.setWifiEnabled(isChecked);
+		
+		// Display message.
+    	Toast.makeText(MainActivity.context, MainActivity.getNotificationWifi(isChecked), Toast.LENGTH_LONG).show();
+    	
+    	// Auto refresh the list.
     	doRefreshList();
-    	Toast.makeText(context, getNotificationWifi(isChecked), Toast.LENGTH_LONG).show();
 	}
 }

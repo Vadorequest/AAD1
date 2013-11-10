@@ -1,4 +1,4 @@
-package com.iha.wcc.interfaces.fragment;
+package com.iha.wcc.fragment.network;
 
 /**
  * This interface must be implemented by activities that contain this fragment to allow an interaction in this fragment to be communicated to the activity

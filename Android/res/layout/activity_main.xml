@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/devices"
-        android:name="com.iha.wcc.NetworkFragment"
+        android:name="com.iha.wcc.fragment.network.NetworkFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/devicesLbl"

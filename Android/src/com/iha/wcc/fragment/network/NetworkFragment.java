@@ -1,20 +1,21 @@
-package com.iha.wcc;
+package com.iha.wcc.fragment.network;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.iha.wcc.data.Network;
-import com.iha.wcc.interfaces.fragment.INetworkFragmentInteractionListener;
 
 import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.text.format.Formatter;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.iha.wcc.MainActivity;
+import com.iha.wcc.data.Network;
+import com.iha.wcc.job.network.Wifi;
 
 
 
@@ -25,7 +26,7 @@ import android.widget.ListView;
  * Activities containing this fragment MUST implement the {@link Callbacks} interface.
  */
 public class NetworkFragment extends ListFragment {
-	private WifiManager wifiManager;
+	private Wifi wifiInfo;
 	private INetworkFragmentInteractionListener mListener;
 	private ArrayAdapter<Network> adapter;
 	private List<Network> networks;
@@ -44,7 +45,7 @@ public class NetworkFragment extends ListFragment {
 		this.adapter = new ArrayAdapter<Network>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
 		
 		// Refresh the list content, that will define the adapter content.
-		this.refreshList();		
+		this.refreshList(true);		
 
 		setListAdapter(this.adapter);
 	}
@@ -80,24 +81,26 @@ public class NetworkFragment extends ListFragment {
 	 * Refresh the devices variable by loading devices from network and refresh the view.
 	 */
 	@SuppressWarnings("deprecation")
-	public void refreshList(){
+	public void refreshList(boolean displayWarnings){
 		// Force refresh WIFI manager.
-		this.refreshWifiManager();
+		this.wifiInfo = new Wifi().getInfo((WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE));
+		boolean wifiEnable = this.wifiInfo.getWifiManager().isWifiEnabled();
 		
 		networks = new ArrayList<Network>();
-		networks.add(new Network(this.wifiManager.getConnectionInfo().getSSID(), Formatter.formatIpAddress(this.wifiManager.getConnectionInfo().getIpAddress())));
+		if(wifiEnable){
+			networks.add(new Network(
+					wifiInfo.getNetworkName(), 
+					wifiInfo.getServerIpAddress(), 
+					wifiInfo.getGateway(), 
+					wifiInfo.getSubnetMask()
+					));
+		}else if(displayWarnings){
+	    	Toast.makeText(MainActivity.context, MainActivity.getNotificationWifi(wifiEnable), Toast.LENGTH_LONG).show();
+		}		
 
 		// Clear, add all and notify the view.
 		adapter.clear();
 		adapter.addAll(networks);
 		adapter.notifyDataSetChanged();
 	}
-	
-	/**
-	 * Refresh the Wifi manager. Useful when the connection is lost or shutdown.
-	 */
-	public void refreshWifiManager(){
-		this.wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-	}
-
 }
