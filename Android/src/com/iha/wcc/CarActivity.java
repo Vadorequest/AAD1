@@ -1,11 +1,20 @@
 package com.iha.wcc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import com.iha.wcc.job.socket.CarSocket;
+import com.iha.wcc.job.socket.RequestTask;
 
 
 import android.annotation.TargetApi;
@@ -13,6 +22,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.Formatter;
@@ -157,37 +167,41 @@ public class CarActivity extends Activity {
 	 * @param port Port used to communicate with the device.
 	 */
 	private void initializeCar(String name, String ip){
+		// Initialize the CarSocket class with available information about the host to connect.
+		CarSocket.initialize(ip);
 		
-		CarSocket.initialize(ip).execute("test");		
+		// Initialize the car with an external AsyncTask.
+		//CarSocket.execute("init");		
 	}
 	
 	/**
 	 * Send a request to the car to go forward.
 	 */
 	private void goForward(){
-		
-		Toast.makeText(context, "Vrouuuuuuum!", Toast.LENGTH_SHORT).show();
+		new RequestTask().execute("http://192.168.240.1/arduino/digital/13/1");
+		//CarSocket.execute("digital/13/1");
 	}
 	
 	/**
 	 * Send a request to the car to go backward.
 	 */
 	private void goBackward(){
-		Toast.makeText(context, "Slowing down!", Toast.LENGTH_SHORT).show();
+		new RequestTask().execute("http://192.168.240.1/arduino/digital/13/0");
+		//CarSocket.execute("digital/13/0");
 	}
 	
 	/**
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
-		Toast.makeText(context, "Turning left!", Toast.LENGTH_SHORT).show();
+		CarSocket.execute("left");
 	}
 	
 	/**
 	 * Send a request to the car to go to the right.
 	 */
 	private void goRight(){
-		Toast.makeText(context, "Turning right!", Toast.LENGTH_SHORT).show();
+		CarSocket.execute("right");
 	}
 	
 	/**

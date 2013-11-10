@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -13,18 +16,12 @@ public class CarSocket {
 	public static String host;
 	public static int port = 5555;
 	
-	public static Send send;
-	
-	private Socket socket;
-	private DataOutputStream dataOutputStream;
-	
 	static{
 		new CarSocket();
 	}
 	
 	public CarSocket(){
 		instance = this;
-		send = new Send();
 	}
 
 	public static CarSocket initialize(String host){
@@ -40,14 +37,17 @@ public class CarSocket {
 		return instance;
 	}
 	
-	public static void execute(String... params){
-		send.execute(params);
-		Log.i("CarSocket::execute", params[0]);
+	public static AsyncTask<String, Void, JSONObject> execute(String... params){
+		
+		return new CarSocket.Send().execute(params);
 	}
 	
-	private class Send extends AsyncTask<String, Void, Void>{
-
-		protected Void doInBackground(String... params) {
+	private static class Send extends AsyncTask<String, Void, JSONObject>{
+		private Socket socket;
+		private DataOutputStream dataOutputStream;
+		
+		protected JSONObject doInBackground(String... params) {
+			long startTime = System.nanoTime();
 			Log.i("Send::doInBackground", params[0]);
 			
 			try {
@@ -65,7 +65,18 @@ public class CarSocket {
 //				e.printStackTrace();
 				Log.e("Socket state:", "Unable to start a socket connection." + e.getMessage());
 			}
-			return null;			
+						
+			// TODO return something useful;
+			JSONObject response = new JSONObject();
+			try {
+				response.put("elapsedTime", System.nanoTime() - startTime);
+				Log.i("Response", Long.toString(response.getLong("elapsedTime")));
+			} catch (JSONException e) {
+				//e.printStackTrace();
+				Log.e("JSONException", e.getMessage());
+			}
+			
+			return response;			
 		}
 		
 	}
