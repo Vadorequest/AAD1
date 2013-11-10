@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.iha.wcc.job.socket.CarSocket;
+
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -29,12 +31,6 @@ public class CarActivity extends Activity {
 	 * Static instance of itself.
 	 */
 	private static Context context;
-	
-	/*
-	 * Socket connection between the application and the car.
-	 */
-	private Socket socket;
-	private DataOutputStream dataOutputStream;
 	
 	// View components.
 	private ImageView cameraContent;
@@ -161,18 +157,8 @@ public class CarActivity extends Activity {
 	 * @param port Port used to communicate with the device.
 	 */
 	private void initializeCar(String name, String ip){
-		// TODO I don't have the port of the device, maybe we should defined it in "hard", easier.
-//		try {
-//			this.socket = new Socket(ip, 5555);
-//			this.dataOutputStream = new DataOutputStream(socket.getOutputStream());// Can't be called in the MAIN thread: http://stackoverflow.com/questions/6343166/android-os-networkonmainthreadexception
-//			
-//		} catch (UnknownHostException e) {
-//			e.printStackTrace();
-//			Log.e("Socket", "Unable to start a socket connection.");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			Log.e("Socket", "Unable to start a socket connection.");
-//		}
+		
+		CarSocket.initialize(ip).execute("test");		
 	}
 	
 	/**
