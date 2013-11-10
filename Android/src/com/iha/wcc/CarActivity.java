@@ -13,8 +13,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.iha.wcc.job.socket.CarSocket;
-import com.iha.wcc.job.socket.RequestTask;
+import com.iha.wcc.job.carCommunication.CarSocket;
+import com.iha.wcc.job.carCommunication.CarHttpRequest;
 
 
 import android.annotation.TargetApi;
@@ -167,41 +167,39 @@ public class CarActivity extends Activity {
 	 * @param port Port used to communicate with the device.
 	 */
 	private void initializeCar(String name, String ip){
-		// Initialize the CarSocket class with available information about the host to connect.
-		CarSocket.initialize(ip);
-		
-		// Initialize the car with an external AsyncTask.
-		//CarSocket.execute("init");		
+		// Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
+		CarSocket.initialize(ip);// Use socket.
+		CarHttpRequest.initialize(ip);// Use HTTP web request, slower.	
 	}
 	
 	/**
 	 * Send a request to the car to go forward.
 	 */
 	private void goForward(){
-		new RequestTask().execute("http://192.168.240.1/arduino/digital/13/1");
-		//CarSocket.execute("forward");
+		CarHttpRequest.execute("digital/13/1");
+//		CarSocket.execute("forward");
 	}
 	
 	/**
 	 * Send a request to the car to go backward.
 	 */
 	private void goBackward(){
-		new RequestTask().execute("http://192.168.240.1/arduino/digital/13/0");
-		//CarSocket.execute("back");
+		CarHttpRequest.execute("digital/13/0");
+//		CarSocket.execute("back");
 	}
 	
 	/**
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
-		CarSocket.execute("left");
+//		CarSocket.execute("left");
 	}
 	
 	/**
 	 * Send a request to the car to go to the right.
 	 */
 	private void goRight(){
-		CarSocket.execute("right");
+//		CarSocket.execute("right");
 	}
 	
 	/**

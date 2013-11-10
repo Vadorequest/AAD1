@@ -1,4 +1,4 @@
-package com.iha.wcc.job.socket;
+package com.iha.wcc.job.carCommunication;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,34 +12,25 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class CarSocket {
-	public static CarSocket instance;
 	public static String host;
 	public static int port = 5555;
 	
 	static{
 		new CarSocket();
 	}
-	
-	public CarSocket(){
-		instance = this;
-	}
 
-	public static CarSocket initialize(String host){
+	public static void initialize(String host){
 		CarSocket.host = host;
-		
-		return instance;
 	}
 	
-	public static CarSocket initialize(String host, int port){
+	public static void initialize(String host, int port){
 		CarSocket.host = host;
 		CarSocket.port = port;
-		
-		return instance;
 	}
 	
-	public static AsyncTask<String, Void, JSONObject> execute(String... params){
+	public static void execute(String params){
 		
-		return new CarSocket.Send().execute(params);
+		new CarSocket.Send().execute(params);
 	}
 	
 	private static class Send extends AsyncTask<String, Void, JSONObject>{
