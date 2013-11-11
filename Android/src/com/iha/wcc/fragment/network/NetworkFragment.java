@@ -95,7 +95,7 @@ public class NetworkFragment extends ListFragment {
 					wifiInfo.getSubnetMask()
 					));
 		}else if(displayWarnings){
-	    	Toast.makeText(MainActivity.context, MainActivity.getNotificationWifi(wifiEnable), Toast.LENGTH_LONG).show();
+	    	Toast.makeText(getActivity(), MainActivity.getNotificationWifi(wifiEnable), Toast.LENGTH_LONG).show();
 		}		
 
 		// Clear, add all and notify the view.
