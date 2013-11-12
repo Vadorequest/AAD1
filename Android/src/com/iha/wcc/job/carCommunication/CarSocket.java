@@ -51,10 +51,10 @@ public class CarSocket {
 				
 			} catch (UnknownHostException e) {
 //				e.printStackTrace();
-				Log.e("Socket state:", "Unable to start a socket connection." + e.getMessage());
+				Log.e("UnknownHostException", "Unable to start a socket connection." + e.getMessage());
 			} catch (IOException e) {
 //				e.printStackTrace();
-				Log.e("Socket state:", "Unable to start a socket connection." + e.getMessage());
+				Log.e("IOException", "Unable to start a socket connection." + e.getMessage());
 			}
 						
 			// TODO return something useful;

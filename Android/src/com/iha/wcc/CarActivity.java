@@ -1,46 +1,112 @@
 package com.iha.wcc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import com.iha.wcc.job.carCommunication.CarSocket;
-import com.iha.wcc.job.carCommunication.CarHttpRequest;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.format.Formatter;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 public class CarActivity extends Activity {
-	/*
+	/**
 	 * Static instance of itself.
 	 */
-	private static Context context;
+	public static Context context;
+
+    /**
+     * Tag used to debug.
+     */
+    private final static String TAG = ">==< ArduinoYun >==<";
+
+    /**
+     * Information about the server to reach.
+     */
+    private static String serverIpAddress;
+    private static int serverPort = 5555;
+
+    /**
+     * Array of strings that contains all messages to send to the server using sockets.
+     */
+    private ArrayBlockingQueue<String> mQueue = new ArrayBlockingQueue<String>(255);
+    private AtomicBoolean mStop = new AtomicBoolean(false);
+
+    /**
+     * Contains the values to write in the socket stream.
+     */
+    private OutputStream mOutputStream = null;
+
+    /**
+     * Socket connected to the Arduino.
+     */
+    private Socket mSocket = null;
+
+    /**
+     * Thread which manage socket streams.
+     */
+    private static Thread sNetworkThread = null;
+
+    /**
+     *
+     */
+    private final Runnable mNetworkRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            log("starting network thread");
+
+            try {
+                mSocket = new Socket(serverIpAddress, serverPort);
+                mOutputStream = mSocket.getOutputStream();
+            } catch (UnknownHostException e1) {
+                e1.printStackTrace();
+                mStop.set(true);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                mStop.set(true);
+            }
+
+            mQueue.clear(); // we only want new values
+
+            try {
+                while(!mStop.get()){
+                    String val = mQueue.take();
+                    if(val != "-1"){
+                        log("sending value "+val);
+                        mOutputStream.write((val+"\n").getBytes());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally{
+                try {
+                    mStop.set(true);
+                    if(mOutputStream != null) mOutputStream.close();
+                    if(mSocket != null) mSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            log("returning from network thread");
+            sNetworkThread = null;
+        }
+    };
 	
 	// View components.
 	private ImageView cameraContent;
@@ -70,6 +136,25 @@ public class CarActivity extends Activity {
 		Bundle extras = getIntent().getExtras();
 		this.initializeCar((String)extras.get("name"), (String)extras.get("ip"));
 	}
+
+    @Override
+    protected void onStart() {
+        mStop.set(false);
+        if(sNetworkThread == null){
+            sNetworkThread = new Thread(mNetworkRunnable);
+            sNetworkThread.start();
+        }
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mStop.set(true);
+        mQueue.clear();
+        mQueue.offer("-1");
+        if(sNetworkThread != null) sNetworkThread.interrupt();
+        super.onStop();
+    }
 
 	/**
 	 * Initialize all view components.
@@ -113,8 +198,42 @@ public class CarActivity extends Activity {
 				displaySettings();
 			}
 		});
-		
-		// On touch, go forward.
+
+        // Use onClick event is better for debug but worse for real use.
+        // On click, go forward.
+		this.goForwardBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goForward();
+            }
+        });
+
+		// On click, go backward.
+		this.goBackwardBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBackward();
+            }
+        });
+
+		// On click, go to the left.
+		this.goLeftBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goLeft();
+            }
+        });
+
+		// On click, go to the right.
+		this.goRightBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goRight();
+            }
+        });
+
+        // Use onTouch event send to much queries, bad for debug but should be the final way to do it.
+		/*// On touch, go forward.
 		this.goForwardBtn.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -148,7 +267,7 @@ public class CarActivity extends Activity {
 				goRight();
 				return false;
 			}
-		});
+		});*/
 	}
 
 	@Override
@@ -163,43 +282,52 @@ public class CarActivity extends Activity {
 	/**
 	 * Initialize the car, load the local phone settings and send them to the car.
 	 * Save in session useful information about the car.
+	 * @param name Network SSID.
 	 * @param ip IP address of the car.
-	 * @param port Port used to communicate with the device.
 	 */
 	private void initializeCar(String name, String ip){
 		// Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
-		CarSocket.initialize(ip);// Use socket.
-		CarHttpRequest.initialize(ip);// Use HTTP web request, slower.	
+		//CarSocket.initialize(ip);// Use socket.
+		//CarHttpRequest.initialize(context, ip);// Use HTTP web request, slower.
+        serverIpAddress = ip;
 	}
 	
 	/**
 	 * Send a request to the car to go forward.
 	 */
 	private void goForward(){
-		CarHttpRequest.execute("digital/13/1");
-//		CarSocket.execute("forward");
+		//CarHttpRequest.execute("forward");
+		//CarHttpRequest.execute("digital/13/1");
+		//CarSocket.execute("forward/1");
+        send("forward");
 	}
 	
 	/**
 	 * Send a request to the car to go backward.
 	 */
 	private void goBackward(){
-		CarHttpRequest.execute("digital/13/0");
-//		CarSocket.execute("back");
+		//CarHttpRequest.execute("back");
+        //CarHttpRequest.execute("digital/13/0");
+		//CarSocket.execute("backward/1");
+        send("backward");
 	}
 	
 	/**
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
+        //CarHttpRequest.execute("left/");
 //		CarSocket.execute("left");
+        send("left");
 	}
 	
 	/**
 	 * Send a request to the car to go to the right.
 	 */
 	private void goRight(){
+        //CarHttpRequest.execute("right/");
 //		CarSocket.execute("right");
+        send("right");
 	}
 	
 	/**
@@ -224,4 +352,19 @@ public class CarActivity extends Activity {
 		Toast.makeText(context, "I don't know really how did that in only one screen guys! We should discuss about :)", Toast.LENGTH_SHORT).show();
 	}
 
+    /**
+     * Send a message using the socket connection to the Arduino.
+     * @param message
+     */
+    private void send(String message){
+        mQueue.offer(message);
+    }
+
+    /**
+     * Debug log.
+     * @param s Message to display.
+     */
+    public void log(String s){
+        Log.d(TAG, s);
+    }
 }

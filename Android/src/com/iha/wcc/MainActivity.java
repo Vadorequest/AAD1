@@ -101,6 +101,12 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 		});
 	}
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        this.doRefreshList();
+    }
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -116,9 +122,6 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 		intent.putExtra("ip", ip);
 		
         startActivity(intent);
-        
-        // Display a message to the user.
-		Toast.makeText(this, "Connection processing with the device "+ip+" ("+name+")", Toast.LENGTH_LONG).show();
 	}
 	
 	/**
@@ -132,10 +135,19 @@ public class MainActivity extends FragmentActivity implements INetworkFragmentIn
 
 	/**
 	 * Refresh the list.
+     * Display warnings only if wifi disabled.
 	 */
 	private void doRefreshList() {
-		networks.refreshList(!this.wifiBtn.isChecked());
+        this.doRefreshList(!this.wifiBtn.isChecked());
 	}
+
+    /**
+     * Refresh the list.
+     * @param displayWarnings If true, display warnings.
+     */
+    private void doRefreshList(boolean displayWarnings) {
+        networks.refreshList(displayWarnings);
+    }
 
 	/**
 	 * Enable or disable the wifi.

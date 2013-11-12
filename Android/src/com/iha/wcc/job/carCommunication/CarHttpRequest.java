@@ -2,18 +2,23 @@ package com.iha.wcc.job.carCommunication;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import android.content.Context;
+import android.widget.Toast;
+import com.iha.wcc.exception.MessageException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class CarHttpRequest {
+    public static Context context;
 	public static String host;
 	public static int port = 5555;
 	
@@ -21,11 +26,13 @@ public class CarHttpRequest {
 		new CarHttpRequest();
 	}
 
-	public static void initialize(String host){
+	public static void initialize(Context context, String host){
+        CarHttpRequest.context = context;
 		CarHttpRequest.host = host;
 	}
 	
-	public static void initialize(String host, int port){
+	public static void initialize(Context context, String host, int port){
+        CarHttpRequest.context = context;
 		CarHttpRequest.host = host;
 		CarHttpRequest.port = port;
 	}
@@ -35,14 +42,17 @@ public class CarHttpRequest {
 	}
 	
 	private static class Send  extends AsyncTask<String, String, String>{
+        private String errorToDisplayOnPostExecute = null;
+
 	    @Override
-	    protected String doInBackground(String... uri) {
+	    protected String doInBackground(String... uri){
 	        HttpClient httpclient = new DefaultHttpClient();
 	        HttpResponse response;
-	        String responseString = null;
+	        String responseString = "";
 	        try {
-	        	HttpGet URI = new HttpGet("http://"+host+":"+port+"/arduino/"+uri[0]);
-	        	Log.i("Request sent", URI.getURI().getPath());
+                String URL = "http://"+host+/*":"+port+*/"/arduino/"+uri[0];
+	        	HttpGet URI = new HttpGet(URL);
+	        	Log.i("Request sent", URL);
 	            response = httpclient.execute(URI);
 	            StatusLine statusLine = response.getStatusLine();
 	            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
@@ -56,10 +66,15 @@ public class CarHttpRequest {
 	                response.getEntity().getContent().close();
 	                throw new IOException(statusLine.getReasonPhrase());
 	            }
+            } catch(HttpHostConnectException e){
+                Log.e("HttpHostConnectException", e.getMessage());
+                this.errorToDisplayOnPostExecute =  e.getMessage() + "\nPlease check you are connected to the Arduino hotspot.";
 	        } catch (ClientProtocolException e) {
-	        	e.printStackTrace();
+                Log.e("ClientProtocolException", e.getMessage());
+                this.errorToDisplayOnPostExecute = e.getMessage();
 	        } catch (IOException e) {
-	        	e.printStackTrace();
+                Log.e("IOException", e.getMessage());
+                this.errorToDisplayOnPostExecute = e.getMessage();
 	        }
 	        return responseString;
 	    }
@@ -67,6 +82,11 @@ public class CarHttpRequest {
 	    @Override
 	    protected void onPostExecute(String result) {
 	        super.onPostExecute(result);
+
+            // Display error if exists.
+            if(this.errorToDisplayOnPostExecute != null){
+                Toast.makeText(context, this.errorToDisplayOnPostExecute, Toast.LENGTH_LONG).show();
+            }
 	        Log.i("Response", result);
 	    }
 	}

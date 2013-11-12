@@ -80,7 +80,6 @@ public class NetworkFragment extends ListFragment {
 	/**
 	 * Refresh the devices variable by loading devices from network and refresh the view.
 	 */
-	@SuppressWarnings("deprecation")
 	public void refreshList(boolean displayWarnings){
 		// Force refresh WIFI manager.
 		this.wifiInfo = new Wifi().getInfo((WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE));
