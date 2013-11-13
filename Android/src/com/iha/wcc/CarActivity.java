@@ -8,10 +8,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -174,8 +172,7 @@ public class CarActivity extends Activity {
 	/**
 	 * Bind all button listeners. (called during the initialization)
 	 */
-	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-	private void initializeListeners(){		
+	private void initializeListeners(){
 		// On click, take a picture.
 		this.pictureBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -201,7 +198,7 @@ public class CarActivity extends Activity {
 		});
 
         // Use onClick event is better for debug but worse for real use.
-        /*// On click, go forward.
+        // On click, go forward.
 		this.goForwardBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,7 +228,7 @@ public class CarActivity extends Activity {
             public void onClick(View v) {
                 goRight();
             }
-        });*/
+        });
 
         // Use onTouch event send to much queries, bad for debug but should be the final way to do it.
 		// On touch, go forward.
@@ -295,6 +292,7 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go forward.
 	 */
 	private void goForward(){
+        Car.calculSpeed(Car.Direction.FORWARD);
         send("forward");
 	}
 	
@@ -302,6 +300,7 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go backward.
 	 */
 	private void goBackward(){
+        Car.calculSpeed(Car.Direction.BACKWARD);
         send("backward");
 	}
 	
@@ -309,6 +308,7 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
+        Car.calculSpeed(Car.Direction.LEFT);
         send("left");
 	}
 	
@@ -316,6 +316,7 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go to the right.
 	 */
 	private void goRight(){
+        Car.calculSpeed(Car.Direction.RIGHT);
         send("right");
 	}
 	
@@ -343,10 +344,10 @@ public class CarActivity extends Activity {
 
     /**
      * Send a message using the socket connection to the Arduino.
-     * @param message
+     * @param direction
      */
-    private void send(String message){
-        mQueue.offer(message);
+    private void send(String direction){
+        mQueue.offer(direction + "/" + Car.speed);
     }
 
     /**
@@ -362,26 +363,10 @@ public class CarActivity extends Activity {
      * Contains all values about it.
      */
     private static class Car {
-        /**
-         * Speed of the car.
-         */
-        public static int speed = 0;
 
-        /**
-         * Last direction used by the car.
+        /*
+         ******************************************* CONSTANTS *****************************************
          */
-        public static Direction lastDirection;
-
-        /**
-         * List of available directions.
-         */
-        public static enum Direction {
-            FORWARD,
-            BACKWARD,
-            LEFT,
-            RIGHT,
-            STOP
-        };
 
         /**
          * Each time forward is called the speed is incremented.
@@ -394,13 +379,176 @@ public class CarActivity extends Activity {
         public final static int SPEED_INC_BACKWARD = 5;
 
         /**
+         * Speed is decremented when we turn going forward.
+         */
+        public final static int SPEED_DEC_TURN_FORWARD = 10;
+
+        /**
+         * Speed is decremented when we turn going backward.
+         */
+        public final static int SPEED_DEC_TURN_BACKWARD = 20;
+
+        /**
          * Maximal speed available for forward direction.
          */
         public final static int MAX_SPEED_FORWARD = 250;
 
         /**
+         * Minimal speed available for forward direction.
+         */
+        public final static int MIN_SPEED_FORWARD = 5;
+
+        /**
          * Maximal speed available for backward direction.
          */
         public final static int MAX_SPEED_BACKWARD = 125;
+
+        /**
+         * Minimal speed available for backward direction.
+         */
+        public final static int MIN_SPEED_BACKWARD = 5;
+
+        /*
+         ******************************************* VARIABLES *****************************************
+         */
+
+        /**
+         * Speed of the car.
+         */
+        public static int speed = 0;
+
+        /**
+         * Last direction used by the car. Stopped by default.
+         */
+        public static Direction lastDirection = Direction.STOP;
+
+        /**
+         * List of available directions.
+         */
+        public static enum Direction {
+            FORWARD,
+            BACKWARD,
+            LEFT,
+            RIGHT,
+            STOP
+        };
+
+        /*
+         ******************************************* METHODS *****************************************
+         */
+
+        /**
+         * Calcul the new speed.
+         * @param direction The direction of the car.
+         */
+        public static int calculSpeed(Direction direction) {
+            // If we ask to stop, just stop.
+            if(direction == Direction.STOP){
+                speed = 0;
+                return speed;
+            }
+
+            // Else it's a little more funny. (Wrote at 2 a.m)
+            if(direction == lastDirection){
+                // We keep the same direction.
+                switch (direction){
+                    case FORWARD :
+                        _accelerateForward();
+                        break;
+                    case BACKWARD :
+                        _accelerateBackward();
+                        break;
+                    case LEFT :
+                    case RIGHT :
+                        // Speed still the same.
+                        break;
+                }
+            }else{
+                // Depending on the last direction used.
+                switch (lastDirection){
+                    case FORWARD :
+                        if(direction == Direction.BACKWARD){
+                            // If we was going forward and now going backward OR if we stop.
+                            speed = 0;
+                        } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
+                            // If we turn going forward.
+                            _turnForward();
+                        }
+                        break;
+                    case BACKWARD :
+                        if(direction == Direction.FORWARD){
+                            // If we was going backward and now going forward OR if we stop.
+                            speed = 0;
+                        } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
+                            // If we turn going forward.
+                            _turnBackward();
+                        }
+                        break;
+                    case LEFT :
+                    case RIGHT :
+                    case STOP :
+                        // Increase the speed depending of the direction if we are going forward or backward.
+                        switch (direction){
+                            case FORWARD :
+                                _accelerateForward();
+                                break;
+                            case BACKWARD :
+                                _accelerateBackward();
+                                break;
+                        }
+                        break;
+                }
+            }
+
+            // Update the last direction used.
+            lastDirection = direction;
+
+            // Return the new speed to use.
+            return speed;
+        }
+
+        /**
+         * Increase the speed going forward.
+         */
+        private static void _accelerateForward(){
+            if(speed + SPEED_INC_FORWARD < MAX_SPEED_FORWARD){
+                speed += SPEED_INC_FORWARD;
+            }else{
+                speed = MAX_SPEED_FORWARD;
+            }
+        }
+
+        /**
+         * Increase the speed going backward.
+         */
+        private static void _accelerateBackward() {
+            if(speed + SPEED_INC_BACKWARD < MAX_SPEED_BACKWARD){
+                speed += SPEED_INC_BACKWARD;
+            }else{
+                speed = MAX_SPEED_BACKWARD;
+            }
+        }
+
+        /**
+         * Update the speed when turning forward.
+         */
+        private static void _turnForward() {
+            if(speed - SPEED_DEC_TURN_FORWARD > MIN_SPEED_FORWARD){
+                speed -= SPEED_DEC_TURN_FORWARD;
+            }else{
+                speed = MIN_SPEED_FORWARD;
+            }
+        }
+
+        /**
+         * Update the speed when turning backward.
+         */
+        private static void _turnBackward() {
+            if(speed - SPEED_DEC_TURN_BACKWARD > MIN_SPEED_BACKWARD){
+                speed -= SPEED_DEC_TURN_BACKWARD;
+            }else{
+                speed = MIN_SPEED_BACKWARD;
+            }
+        }
     }
 }
