@@ -59,7 +59,7 @@ public class CarActivity extends Activity {
     private static Thread sNetworkThread = null;
 
     /**
-     *
+     * Runnable running in another thread, responsible to the communication with the car.
      */
     private final Runnable mNetworkRunnable = new Runnable() {
 
@@ -116,7 +116,8 @@ public class CarActivity extends Activity {
 	private ImageButton goBackwardBtn;
 	private ImageButton goLeftBtn;
 	private ImageButton goRightBtn;
-	
+	private ImageButton doStopBtn;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -167,6 +168,7 @@ public class CarActivity extends Activity {
 		this.goBackwardBtn = (ImageButton) findViewById(R.id.goBackwardBtn);
 		this.goLeftBtn = (ImageButton) findViewById(R.id.goLeftBtn);
 		this.goRightBtn = (ImageButton) findViewById(R.id.goRightBtn);
+		this.doStopBtn = (ImageButton) findViewById(R.id.doStopBtn);
 	}
 	
 	/**
@@ -230,6 +232,14 @@ public class CarActivity extends Activity {
             }
         });
 
+        // On click, stop the car.
+        this.doStopBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doStop();
+            }
+        });
+
         // Use onTouch event send to much queries, bad for debug but should be the final way to do it.
 		// On touch, go forward.
 		this.goForwardBtn.setOnTouchListener(new View.OnTouchListener() {
@@ -266,6 +276,15 @@ public class CarActivity extends Activity {
 				return false;
 			}
 		});
+
+		// On touch, stop the car.
+		this.doStopBtn.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+                doStop();
+				return false;
+			}
+		});
 	}
 
 	@Override
@@ -286,6 +305,9 @@ public class CarActivity extends Activity {
 	private void initializeCar(String name, String ip){
 		// Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
         serverIpAddress = ip;
+
+        // TODO Send the settings to the car.
+        //send("settings", "SETTINGS...");
 	}
 	
 	/**
@@ -319,24 +341,32 @@ public class CarActivity extends Activity {
         Car.calculSpeed(Car.Direction.RIGHT);
         send("right");
 	}
-	
+
 	/**
-	 * Send a request to the car to go backward.
+	 * Send a request to the car to go to the right.
 	 */
-	private void doPhoto(){
-		Toast.makeText(context, "Photo taken! Stored on the internal car SD card.", Toast.LENGTH_SHORT).show();
+	private void doStop(){
+        Car.calculSpeed(Car.Direction.STOP);
+        send("stop");
 	}
 	
 	/**
-	 * Send a request to the car to go backward.
+	 * Send a request to the car to take a photo to store on the SD card.
+	 */
+	private void doPhoto(){
+        send("photo");
+	}
+	
+	/**
+	 * Send a request to the car to generate a a sound from the car (honk).
 	 */
 	private void doHonk(){
-		Toast.makeText(context, "Move your ass! Asshole!", Toast.LENGTH_SHORT).show();
+        send("honk");
 	}
 	
 	/**
 	 * Display settings.
-	 * TODO We don't know yet how it will works, another page? Could be better to have all the stuff on the same page but could be difficult...
+	 * TODO We don't know yet how it will works, another page? Could be better to have all the stuff on the same page but could be difficult... [Alvarro]
 	 */
 	private void displaySettings(){
 		Toast.makeText(context, "I don't know really how did that in only one screen guys! We should discuss about :)", Toast.LENGTH_SHORT).show();
@@ -344,10 +374,20 @@ public class CarActivity extends Activity {
 
     /**
      * Send a message using the socket connection to the Arduino.
-     * @param direction
+     * @param action
      */
-    private void send(String direction){
-        mQueue.offer(direction + "/" + Car.speed);
+    private void send(String action){
+        mQueue.offer(action + "/" + Car.speed);
+    }
+
+    /**
+     * Send a message using the socket connection to the Arduino.
+     * Send params instead of the speed.
+     * @param action
+     * @param params
+     */
+    private void send(String action, String params){
+        mQueue.offer(action + "/" + params);
     }
 
     /**

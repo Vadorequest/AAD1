@@ -85,4 +85,15 @@
         android:background="@drawable/round_button_white"
         android:src="@drawable/ic_go_left" />
 
+    <ImageButton
+        android:id="@+id/doStopBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/goRightBtn"
+        android:layout_alignLeft="@+id/goForwardBtn"
+        android:layout_alignRight="@+id/goForwardBtn"
+        android:layout_alignBottom="@+id/goLeftBtn"
+        android:background="@drawable/round_button_white"
+        />
+
 </RelativeLayout>
