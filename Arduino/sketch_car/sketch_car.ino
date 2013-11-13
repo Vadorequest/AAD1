@@ -70,54 +70,58 @@ void loop() {
 
 void process(YunClient client) {
   // Format: COMMAND/SPEED
-  String command = client.readStringUntil('/');    
-  int speed = client.read() == '/' ? client.parseInt() : 0;
-  
-  if(command.length() > 0){
-  Serial.println("Command: "+command);
-  Serial.println(client.readString());
-    }
-  
+  String command = client.readStringUntil('/');  
+//Serial.println("QueryX:"+client.readString());  
+  int speed = client.parseInt();
+   
   
   if (command == "forward") {
-    client.print(F("forward"));
+        client.print(F("forward"));
+        Serial.println("forward");  
 	rearWheels->run(RELEASE);
 	rearWheels->setSpeed(255);
 	rearWheels->run(FORWARD);
   }
   else if (command == "backward") {
-    client.print(F("backward"));
+        client.print(F("backward"));
+        Serial.println("backward"); 
 	rearWheels->run(RELEASE);
 	rearWheels->setSpeed(255);
 	rearWheels->run(BACKWARD);
   }
   else if (command == "left") {
-    client.print(F("left"));
+        client.print(F("left"));
+        Serial.println("left"); 
 	frontWheels->run(RELEASE);
 	frontWheels->setSpeed(150);
 	frontWheels->run(FORWARD);
   }
   else if(command == "right"){
-    client.print(F("right"));
+        client.print(F("right"));
+        Serial.println("right"); 
 	frontWheels->run(RELEASE);
 	frontWheels->setSpeed(150);
 	frontWheels->run(BACKWARD);
   }
   else if(command == "stop"){
-    client.print(F("stop"));
+        client.print(F("stop"));
+        Serial.println("stop"); 
 	rearWheels->run(RELEASE);
 	frontWheels->run(RELEASE);
   }
   else if(command == "photo"){
     client.print(F("photo"));
+    Serial.println("photo"); 
 	// TODO Take a photo
   }
   else if(command == "honk"){
     client.print(F("honk"));
+    Serial.println("honk"); 
 	// TODO Play a sound
   }
   else if(command == "settings"){
     client.print(F("settings"));
+    Serial.println("settings"); 
 	// TODO Load settings
   }
 }
