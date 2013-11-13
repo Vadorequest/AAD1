@@ -69,9 +69,14 @@ void loop() {
 }
 
 void process(YunClient client) {
-  String command = client.readString();
-  command.trim();
-  Serial.println(command);
+  // Format: COMMAND/SPEED
+  String command = client.readStringUntil('/');    
+  int speed = client.read() == '/' ? client.parseInt() : 0;
+  
+  if(command.length() > 0){
+  Serial.println("Command: "+command);
+  Serial.println(client.readString());
+    }
   
   
   if (command == "forward") {
@@ -102,6 +107,18 @@ void process(YunClient client) {
     client.print(F("stop"));
 	rearWheels->run(RELEASE);
 	frontWheels->run(RELEASE);
+  }
+  else if(command == "photo"){
+    client.print(F("photo"));
+	// TODO Take a photo
+  }
+  else if(command == "honk"){
+    client.print(F("honk"));
+	// TODO Play a sound
+  }
+  else if(command == "settings"){
+    client.print(F("settings"));
+	// TODO Load settings
   }
 }
 
