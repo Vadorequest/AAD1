@@ -34,12 +34,6 @@
             android:configChanges="orientation|keyboardHidden"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
-        <activity android:name=".CarSocketActivity">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>-->
-        </activity>
     </application>
 
     

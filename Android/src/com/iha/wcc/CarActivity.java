@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -200,7 +201,7 @@ public class CarActivity extends Activity {
 		});
 
         // Use onClick event is better for debug but worse for real use.
-        // On click, go forward.
+        /*// On click, go forward.
 		this.goForwardBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,11 +231,11 @@ public class CarActivity extends Activity {
             public void onClick(View v) {
                 goRight();
             }
-        });
+        });*/
 
         // Use onTouch event send to much queries, bad for debug but should be the final way to do it.
-		/*// On touch, go forward.
-		this.goForwardBtn.setOnTouchListener(new OnTouchListener() {
+		// On touch, go forward.
+		this.goForwardBtn.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				goForward();
@@ -243,7 +244,7 @@ public class CarActivity extends Activity {
 		});
 		
 		// On touch, go backward.
-		this.goBackwardBtn.setOnTouchListener(new OnTouchListener() {
+		this.goBackwardBtn.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				goBackward();
@@ -252,7 +253,7 @@ public class CarActivity extends Activity {
 		});
 		
 		// On touch, go to the left.
-		this.goLeftBtn.setOnTouchListener(new OnTouchListener() {
+		this.goLeftBtn.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				goLeft();
@@ -261,13 +262,13 @@ public class CarActivity extends Activity {
 		});
 		
 		// On touch, go to the right.
-		this.goRightBtn.setOnTouchListener(new OnTouchListener() {
+		this.goRightBtn.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				goRight();
 				return false;
 			}
-		});*/
+		});
 	}
 
 	@Override
@@ -287,8 +288,6 @@ public class CarActivity extends Activity {
 	 */
 	private void initializeCar(String name, String ip){
 		// Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
-		//CarSocket.initialize(ip);// Use socket.
-		//CarHttpRequest.initialize(context, ip);// Use HTTP web request, slower.
         serverIpAddress = ip;
 	}
 	
@@ -296,9 +295,6 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go forward.
 	 */
 	private void goForward(){
-		//CarHttpRequest.execute("forward");
-		//CarHttpRequest.execute("digital/13/1");
-		//CarSocket.execute("forward/1");
         send("forward");
 	}
 	
@@ -306,9 +302,6 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go backward.
 	 */
 	private void goBackward(){
-		//CarHttpRequest.execute("back");
-        //CarHttpRequest.execute("digital/13/0");
-		//CarSocket.execute("backward/1");
         send("backward");
 	}
 	
@@ -316,8 +309,6 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
-        //CarHttpRequest.execute("left/");
-//		CarSocket.execute("left");
         send("left");
 	}
 	
@@ -325,8 +316,6 @@ public class CarActivity extends Activity {
 	 * Send a request to the car to go to the right.
 	 */
 	private void goRight(){
-        //CarHttpRequest.execute("right/");
-//		CarSocket.execute("right");
         send("right");
 	}
 	
@@ -366,5 +355,52 @@ public class CarActivity extends Activity {
      */
     public void log(String s){
         Log.d(TAG, s);
+    }
+
+    /**
+     * Class that represents the current controlled car.
+     * Contains all values about it.
+     */
+    private static class Car {
+        /**
+         * Speed of the car.
+         */
+        public static int speed = 0;
+
+        /**
+         * Last direction used by the car.
+         */
+        public static Direction lastDirection;
+
+        /**
+         * List of available directions.
+         */
+        public static enum Direction {
+            FORWARD,
+            BACKWARD,
+            LEFT,
+            RIGHT,
+            STOP
+        };
+
+        /**
+         * Each time forward is called the speed is incremented.
+         */
+        public final static int SPEED_INC_FORWARD = 10;
+
+        /**
+         * Each time backward is called the speed is incremented.
+         */
+        public final static int SPEED_INC_BACKWARD = 5;
+
+        /**
+         * Maximal speed available for forward direction.
+         */
+        public final static int MAX_SPEED_FORWARD = 250;
+
+        /**
+         * Maximal speed available for backward direction.
+         */
+        public final static int MAX_SPEED_BACKWARD = 125;
     }
 }
