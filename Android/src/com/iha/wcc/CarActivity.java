@@ -85,7 +85,7 @@ public class CarActivity extends Activity {
                     String val = mQueue.take();
                     if(val != "-1"){
                         log("sending value "+val);
-                        mOutputStream.write((val+"\n").getBytes());
+                        mOutputStream.write((val + "\n").getBytes());
                     }
                 }
             } catch (IOException e) {
@@ -273,15 +273,6 @@ public class CarActivity extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				goRight();
-				return false;
-			}
-		});
-
-		// On touch, stop the car.
-		this.doStopBtn.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-                doStop();
 				return false;
 			}
 		});
