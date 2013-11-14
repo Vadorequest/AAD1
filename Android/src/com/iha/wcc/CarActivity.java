@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class CarActivity extends Activity {
@@ -29,7 +30,7 @@ public class CarActivity extends Activity {
     /**
      * Tag used to debug.
      */
-    private final static String TAG = ">==< ArduinoYun >==<";
+    private final static String TAG_DEBUG = ">==< ArduinoYun >==<";
 
     /**
      * Information about the server to reach.
@@ -40,52 +41,52 @@ public class CarActivity extends Activity {
     /**
      * Array of strings that contains all messages to send to the server using sockets.
      */
-    private ArrayBlockingQueue<String> mQueue = new ArrayBlockingQueue<String>(255);
-    private AtomicBoolean mStop = new AtomicBoolean(false);
+    private ArrayBlockingQueue<String> queriesQueueSocket = new ArrayBlockingQueue<String>(255);
+    private AtomicBoolean stopProcessingSocket = new AtomicBoolean(false);
 
     /**
      * Contains the values to write in the socket stream.
      */
-    private OutputStream mOutputStream = null;
+    private OutputStream outputStreamSocket = null;
 
     /**
      * Socket connected to the Arduino.
      */
-    private Socket mSocket = null;
+    private Socket socket = null;
 
     /**
      * Thread which manage socket streams.
      */
-    private static Thread sNetworkThread = null;
+    private static Thread socketThread = null;
 
     /**
      * Runnable running in another thread, responsible to the communication with the car.
      */
-    private final Runnable mNetworkRunnable = new Runnable() {
+    private final Runnable networkRunnable = new Runnable() {
 
         @Override
         public void run() {
             log("starting network thread");
 
             try {
-                mSocket = new Socket(serverIpAddress, serverPort);
-                mOutputStream = mSocket.getOutputStream();
+                socket = new Socket(serverIpAddress, serverPort);
+                outputStreamSocket = socket.getOutputStream();
             } catch (UnknownHostException e1) {
                 e1.printStackTrace();
-                mStop.set(true);
+                stopProcessingSocket.set(true);
             } catch (IOException e1) {
                 e1.printStackTrace();
-                mStop.set(true);
+                stopProcessingSocket.set(true);
             }
 
-            mQueue.clear(); // we only want new values
+            queriesQueueSocket.clear(); // we only want new values
 
             try {
-                while(!mStop.get()){
-                    String val = mQueue.take();
+                while(!stopProcessingSocket.get()){
+                    String val = queriesQueueSocket.take();
                     if(val != "-1"){
                         log("sending value "+val);
-                        mOutputStream.write((val + "\n").getBytes());
+                        outputStreamSocket.write((val + "\n").getBytes());
                     }
                 }
             } catch (IOException e) {
@@ -94,29 +95,30 @@ public class CarActivity extends Activity {
                 e.printStackTrace();
             } finally{
                 try {
-                    mStop.set(true);
-                    if(mOutputStream != null) mOutputStream.close();
-                    if(mSocket != null) mSocket.close();
+                    stopProcessingSocket.set(true);
+                    if(outputStreamSocket != null) outputStreamSocket.close();
+                    if(socket != null) socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
             log("returning from network thread");
-            sNetworkThread = null;
+            socketThread = null;
         }
     };
 	
 	// View components.
-	private ImageView cameraContent;
-	private ImageButton pictureBtn;
-	private ImageButton honkBtn;
-	private ImageButton settingsBtn;
+	private ImageView cameraContent;// The entire screen which displays the video stream or the last photo from the car.
+	private ImageButton pictureBtn;// Take a picture.
+	private ImageButton honkBtn;// Play a sound.
+	private ImageButton settingsBtn;// Go to settings.
 	private ImageButton goForwardBtn;
 	private ImageButton goBackwardBtn;
 	private ImageButton goLeftBtn;
 	private ImageButton goRightBtn;
 	private ImageButton doStopBtn;
+	private TextView speedText;// Displays the current speed.
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,20 +141,20 @@ public class CarActivity extends Activity {
 
     @Override
     protected void onStart() {
-        mStop.set(false);
-        if(sNetworkThread == null){
-            sNetworkThread = new Thread(mNetworkRunnable);
-            sNetworkThread.start();
+        stopProcessingSocket.set(false);
+        if(socketThread == null){
+            socketThread = new Thread(networkRunnable);
+            socketThread.start();
         }
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        mStop.set(true);
-        mQueue.clear();
-        mQueue.offer("-1");
-        if(sNetworkThread != null) sNetworkThread.interrupt();
+        stopProcessingSocket.set(true);
+        queriesQueueSocket.clear();
+        queriesQueueSocket.offer("-1");
+        if(socketThread != null) socketThread.interrupt();
         super.onStop();
     }
 
@@ -169,6 +171,7 @@ public class CarActivity extends Activity {
 		this.goLeftBtn = (ImageButton) findViewById(R.id.goLeftBtn);
 		this.goRightBtn = (ImageButton) findViewById(R.id.goRightBtn);
 		this.doStopBtn = (ImageButton) findViewById(R.id.doStopBtn);
+		this.speedText = (TextView) findViewById(R.id.speedText);
 	}
 	
 	/**
@@ -368,7 +371,7 @@ public class CarActivity extends Activity {
      * @param action
      */
     private void send(String action){
-        mQueue.offer(action + "/" + Car.speed);
+        this.send(action, String.valueOf(Car.speed));
     }
 
     /**
@@ -378,7 +381,11 @@ public class CarActivity extends Activity {
      * @param params
      */
     private void send(String action, String params){
-        mQueue.offer(action + "/" + params);
+        // Send the message in the socket pool.
+        queriesQueueSocket.offer(action + "/" + params);
+
+        // Refresh the displayed speed in the view.
+        speedText.setText(Car.speed + " Km/h");
     }
 
     /**
@@ -386,7 +393,7 @@ public class CarActivity extends Activity {
      * @param s Message to display.
      */
     public void log(String s){
-        Log.d(TAG, s);
+        Log.d(TAG_DEBUG, s);
     }
 
     /**
