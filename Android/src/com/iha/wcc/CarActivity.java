@@ -322,6 +322,8 @@ public class CarActivity extends Activity {
 
         // TODO Send the settings to the car.
         //send("settings", "SETTINGS...");
+        //Car.setSettings(5, 2, 10, 4, 0, 0, 5, 255, 2, 150);
+        //Car.setSettings(50, 20, 100, 40, 0, 0, 50, 2550, 20, 1500);// Fake settings to test the limits.
 	}
 	
 	/**

@@ -7,6 +7,40 @@ package com.iha.wcc.job.car;
 public class Car {
 
     /*
+     ******************************************* CONSTANTS - Motor rules *****************************************
+     */
+
+    /**
+     * The minimal motor's speed.
+     */
+    public final static int MIN_ADAFRUIT_MOTORSHIELD_SPEED = 0;
+
+    /**
+     * The maximal motor's speed.
+     */
+    public final static int MAX_ADAFRUIT_MOTORSHIELD_SPEED = 255;
+
+    /**
+     * The minimal acceleration supported by the motor in one time.
+     */
+    public final static int MIN_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION = MIN_ADAFRUIT_MOTORSHIELD_SPEED;
+
+    /**
+     * The maximal acceleration supported by the motor in one time.
+     */
+    public final static int MAX_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION = MAX_ADAFRUIT_MOTORSHIELD_SPEED;
+
+    /**
+     * The minimal deceleration supported by the motor in one time.
+     */
+    public final static int MIN_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION = MIN_ADAFRUIT_MOTORSHIELD_SPEED;
+
+    /**
+     * The maximal deceleration supported by the motor in one time.
+     */
+    public final static int MAX_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION = MAX_ADAFRUIT_MOTORSHIELD_SPEED;
+
+    /*
      ******************************************* PRIVATE SETTINGS *****************************************
      */
 
@@ -41,24 +75,24 @@ public class Car {
     private static int speedDecTurnBackward = 0;
 
     /**
-     * Maximal speed available for forward direction.
-     */
-    private static int maxSpeedForward = 250;
-
-    /**
      * Minimal speed available for forward direction.
      */
     private static int minSpeedForward = 5;
 
     /**
-     * Maximal speed available for backward direction.
+     * Maximal speed available for forward direction.
      */
-    private static int maxSpeedBackward = 150;
+    private static int maxSpeedForward = 255;
 
     /**
      * Minimal speed available for backward direction.
      */
     private static int minSpeedBackward = 2;
+
+    /**
+     * Maximal speed available for backward direction.
+     */
+    private static int maxSpeedBackward = 150;
 
     /*
      ******************************************* VARIABLES *****************************************
@@ -90,17 +124,17 @@ public class Car {
      */
 
     /**
-     * Change the settings of the car.
+     * Change the settings of the car. Check each setting before set to protect the motor engine.
      * @param speedAccelerationForward
      * @param speedAccelerationBackward
      * @param speedDecelerationForward
      * @param speedDecelerationBackward
      * @param speedDecTurnForward
      * @param speedDecTurnBackward
-     * @param maxSpeedForward
      * @param minSpeedForward
-     * @param maxSpeedBackward
+     * @param maxSpeedForward
      * @param minSpeedBackward
+     * @param maxSpeedBackward
      */
     public static void setSettings(int speedAccelerationForward,
                                    int speedAccelerationBackward,
@@ -108,20 +142,22 @@ public class Car {
                                    int speedDecelerationBackward,
                                    int speedDecTurnForward,
                                    int speedDecTurnBackward,
-                                   int maxSpeedForward,
                                    int minSpeedForward,
-                                   int maxSpeedBackward,
-                                   int minSpeedBackward){
-        Car.speedAccelerationForward = speedAccelerationForward;
-        Car.speedAccelerationBackward = speedAccelerationBackward;
-        Car.speedDecelerationForward = speedDecelerationForward;
-        Car.speedDecelerationBackward = speedDecelerationBackward;
+                                   int maxSpeedForward,
+                                   int minSpeedBackward,
+                                   int maxSpeedBackward){
+
+        // Check settings to respects motor rules. The purpose is to protect the motor engine.
+        Car.speedAccelerationForward = (speedAccelerationForward < MIN_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION ? MIN_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION : ((speedAccelerationForward > MAX_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION) ? MAX_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION : speedAccelerationForward));
+        Car.speedAccelerationBackward = (speedAccelerationBackward < MIN_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION ? MIN_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION : ((speedAccelerationBackward > MAX_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION) ? MAX_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION : speedAccelerationBackward));
+        Car.speedDecelerationForward = (speedDecelerationForward < MIN_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION ? MIN_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION : ((speedDecelerationForward > MAX_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION) ? MAX_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION : speedDecelerationForward));
+        Car.speedDecelerationBackward = (speedDecelerationBackward < MIN_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION ? MIN_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION : ((speedDecelerationBackward > MAX_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION) ? MAX_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION : speedDecelerationBackward));
         Car.speedDecTurnForward = speedDecTurnForward;
         Car.speedDecTurnBackward = speedDecTurnBackward;
-        Car.maxSpeedForward = maxSpeedForward;
-        Car.minSpeedForward = minSpeedForward;
-        Car.maxSpeedBackward = maxSpeedBackward;
-        Car.minSpeedBackward = minSpeedBackward;
+        Car.minSpeedForward = minSpeedForward > MIN_ADAFRUIT_MOTORSHIELD_SPEED ? minSpeedForward : MIN_ADAFRUIT_MOTORSHIELD_SPEED;
+        Car.maxSpeedForward = maxSpeedForward <= MAX_ADAFRUIT_MOTORSHIELD_SPEED ? maxSpeedForward : MAX_ADAFRUIT_MOTORSHIELD_SPEED;
+        Car.minSpeedBackward = minSpeedBackward > MIN_ADAFRUIT_MOTORSHIELD_SPEED ? minSpeedBackward : MIN_ADAFRUIT_MOTORSHIELD_SPEED;
+        Car.maxSpeedBackward = maxSpeedBackward <= MAX_ADAFRUIT_MOTORSHIELD_SPEED ? maxSpeedBackward : MAX_ADAFRUIT_MOTORSHIELD_SPEED;
     }
 
     /**
