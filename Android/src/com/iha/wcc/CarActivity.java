@@ -9,9 +9,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -23,7 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.iha.wcc.job.car.Car;
 
-public class CarActivity extends Activity {
+public class CarActivity extends FragmentActivity {
 	/**
 	 * Static instance of itself.
 	 */
@@ -178,6 +178,13 @@ public class CarActivity extends Activity {
         super.onStop();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.car, menu);
+        return true;
+    }
+
 	/**
 	 * Initialize all view components.
 	 */
@@ -300,13 +307,6 @@ public class CarActivity extends Activity {
 			}
 		});
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.car, menu);
-		return true;
-	}
 	
 	// The next methods communicate with the car.
 	
@@ -418,9 +418,9 @@ public class CarActivity extends Activity {
 
     /**
      * Debug log.
-     * @param s Message to display.
+     * @param message Message to display.
      */
-    public void log(String s){
-        Log.d(TAG_DEBUG, s);
+    private void log(String message){
+        Log.d(TAG_DEBUG, message);
     }
 }

@@ -228,7 +228,7 @@ public class Car {
 
         // Update the last direction used.
         if(autoUpdateDirection){
-            saveNewDirection(direction);
+            _saveNewDirection(direction);
         }
 
         // Return the new speed to use.
@@ -266,7 +266,7 @@ public class Car {
             speed -= speedDeceleration;
 
             // Don't change the sens of the car, we just decelerate.
-            saveNewDirection(lastDirection);
+            _saveNewDirection(lastDirection);
 
             // We changed manually the direction, don't auto update the direction. (It would be wrong)
             return false;
@@ -302,7 +302,7 @@ public class Car {
         speed = 0;
 
         // Save the new direction.
-        saveNewDirection(Direction.STOP);
+        _saveNewDirection(Direction.STOP);
 
         // Return the actual speed. (calculateSpeed method compatibility return type)
         return speed;
@@ -312,7 +312,7 @@ public class Car {
      * Update the lastDirection for the next action.
      * @param direction The new direction of the car.
      */
-    private static void saveNewDirection(Direction direction){
+    private static void _saveNewDirection(Direction direction){
         lastDirection = direction;
     }
 
