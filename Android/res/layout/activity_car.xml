@@ -24,19 +24,19 @@
         android:id="@+id/pictureBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignBottom="@+id/cameraContent"
-        android:layout_alignLeft="@+id/cameraContent"
         android:background="@drawable/round_button_white"
-        android:src="@drawable/ic_take_picture" />
+        android:src="@drawable/ic_take_picture"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"/>
 
     <ImageButton
         android:id="@+id/honkBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignBottom="@+id/cameraContent"
-        android:layout_alignRight="@+id/cameraContent"
         android:background="@drawable/round_button_white"
-        android:src="@drawable/ic_action_honk" />
+        android:src="@drawable/ic_action_honk"
+        android:layout_below="@+id/settingsBtn"
+        android:layout_alignRight="@+id/cameraContent"/>
 
     <ImageButton
         android:id="@+id/settingsBtn"
@@ -51,50 +51,46 @@
         android:id="@+id/goForwardBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignTop="@+id/cameraContent"
-        android:layout_centerHorizontal="true"
         android:background="@drawable/round_button_white"
-        android:src="@drawable/ic_go_forward" />
+        android:src="@drawable/ic_go_forward"
+        android:layout_above="@+id/doStopBtn"
+        android:layout_alignLeft="@+id/goBackwardBtn"/>
 
     <ImageButton
         android:id="@+id/goBackwardBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignLeft="@+id/goForwardBtn"
-        android:layout_alignParentBottom="true"
         android:background="@drawable/round_button_white"
-        android:src="@drawable/ic_go_backward" />
+        android:src="@drawable/ic_go_backward"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/doStopBtn"/>
 
     <ImageButton
         android:id="@+id/goRightBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="42dp"
-        android:layout_toLeftOf="@+id/honkBtn"
         android:background="@drawable/round_button_white"
-        android:src="@drawable/ic_go_right" />
+        android:src="@drawable/ic_go_right"
+        android:layout_alignTop="@+id/goLeftBtn"
+        android:layout_toRightOf="@+id/goLeftBtn"
+        android:layout_marginLeft="31dp"/>
 
     <ImageButton
         android:id="@+id/goLeftBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignTop="@+id/goRightBtn"
-        android:layout_marginLeft="42dp"
-        android:layout_toRightOf="@+id/pictureBtn"
         android:background="@drawable/round_button_white"
-        android:src="@drawable/ic_go_left" />
+        android:src="@drawable/ic_go_left"
+        android:layout_alignBottom="@+id/cameraContent"
+        android:layout_alignParentLeft="true"/>
 
     <ImageButton
         android:id="@+id/doStopBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignTop="@+id/goRightBtn"
-        android:layout_alignLeft="@+id/goForwardBtn"
-        android:layout_alignRight="@+id/goForwardBtn"
-        android:layout_alignBottom="@+id/goLeftBtn"
         android:background="@drawable/round_button_white"
-        />
+        android:layout_above="@+id/goBackwardBtn"
+        android:layout_alignParentRight="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -102,8 +98,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0 Km/h"
         android:id="@+id/speedText"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/goRightBtn"
-        android:layout_marginBottom="11dp" />
+        android:layout_alignBottom="@+id/goBackwardBtn"
+        android:layout_toLeftOf="@+id/goBackwardBtn"/>
 
 </RelativeLayout>
