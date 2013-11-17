@@ -178,10 +178,10 @@ public class Car {
             // We keep the same direction.
             switch (direction){
                 case FORWARD :
-                    _accelerateForward();
+                    _accelerate(speedAccelerationForward, maxSpeedForward);
                     break;
                 case BACKWARD :
-                    _accelerateBackward();
+                    _accelerate(speedAccelerationBackward, maxSpeedBackward);
                     break;
                 case LEFT :
                 case RIGHT :
@@ -194,19 +194,19 @@ public class Car {
                 case FORWARD :
                     if(direction == Direction.BACKWARD){
                         // Deceleration going forward.
-                        autoUpdateDirection = _decelerateForward(lastDirection, direction);
+                        autoUpdateDirection = _decelerate(lastDirection, speedDecelerationForward, minSpeedForward);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
-                        _turnForward();
+                        _turn(speedDecTurnForward, minSpeedForward);
                     }
                     break;
                 case BACKWARD :
                     if(direction == Direction.FORWARD){
                         // Deceleration going backward.
-                        autoUpdateDirection = _decelerateBackward(lastDirection, direction);
+                        autoUpdateDirection = _decelerate(lastDirection, speedDecelerationBackward, minSpeedBackward);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
-                        _turnBackward();
+                        _turn(speedDecTurnBackward, minSpeedBackward);
                     }
                     break;
                 case LEFT :
@@ -215,10 +215,10 @@ public class Car {
                     // Increase the speed depending of the direction if we are going forward or backward.
                     switch (direction){
                         case FORWARD :
-                            _accelerateForward();
+                            _accelerate(speedAccelerationForward, maxSpeedForward);
                             break;
                         case BACKWARD :
-                            _accelerateBackward();
+                            _accelerate(speedAccelerationBackward, maxSpeedBackward);
                             break;
                     }
                     break;
@@ -235,67 +235,28 @@ public class Car {
     }
 
     /**
-     * Increase the speed going forward.
+     * Increase the speed depending on the sens of the car.
      */
-    private static void _accelerateForward(){
-        if(speed + speedAccelerationForward < maxSpeedForward){
-            speed += speedAccelerationForward;
+    private static void _accelerate(int speedAcceleration, int maxSpeed) {
+        if(speed + speedAcceleration < maxSpeed){
+            speed += speedAcceleration;
         }else{
-            speed = maxSpeedForward;
+            speed = maxSpeed;
         }
     }
 
     /**
-     * Increase the speed going backward.
+     * Decrease the speed depending on the sens of the car.
      */
-    private static void _accelerateBackward() {
-        if(speed + speedAccelerationBackward < maxSpeedBackward){
-            speed += speedAccelerationBackward;
-        }else{
-            speed = maxSpeedBackward;
-        }
-    }
-
-    /**
-     * Decrease the speed going forward.
-     */
-    private static boolean _decelerateForward(Direction lastDirection, Direction newDirection) {
-        if(speed - speedDecelerationForward < 0){
+    private static boolean _decelerate(Direction lastDirection, int speedDeceleration, int minSpeed) {
+        if(speed - speedDeceleration < 0){
             // If we want to change the sens of the car.
-            speed = minSpeedBackward;
+            speed = minSpeed;
             return true;
 
-        }else if(speed - speedDecelerationForward > 0){
-            // We decelerate going forward.
-            speed -= speedDecelerationForward;
-
-            // Don't change the sens of the car, we just decelerate.
-            saveNewDirection(lastDirection);
-
-            // We changed manually the direction, don't auto update the direction. (It would be wrong)
-            return false;
-
-        }else{
-            // We stop the car.
-            _stop();
-
-            // We changed manually the direction, don't auto update the direction. (It would be wrong)
-            return false;
-        }
-    }
-
-    /**
-     * Decrease the speed going backward.
-     */
-    private static boolean _decelerateBackward(Direction lastDirection, Direction newDirection) {
-        if(speed - speedDecelerationBackward < 0){
-            // If we want to change the sens of the car.
-            speed = minSpeedBackward;
-            return true;
-
-        }else if(speed - speedDecelerationBackward > 0){
+        }else if(speed - speedDeceleration > 0){
             // We decelerate going backward.
-            speed -= speedDecelerationBackward;
+            speed -= speedDeceleration;
 
             // Don't change the sens of the car, we just decelerate.
             saveNewDirection(lastDirection);
@@ -313,24 +274,13 @@ public class Car {
     }
 
     /**
-     * Update the speed when turning forward.
+     * Update the speed when turning depending on the sens of the car.
      */
-    private static void _turnForward() {
-        if(speed - speedDecTurnForward > minSpeedForward){
-            speed -= speedDecTurnForward;
+    private static void _turn(int speedDecTurn, int minSpeed) {
+        if(speed - speedDecTurn > minSpeed){
+            speed -= speedDecTurn;
         }else{
-            speed = minSpeedForward;
-        }
-    }
-
-    /**
-     * Update the speed when turning backward.
-     */
-    private static void _turnBackward() {
-        if(speed - speedDecTurnBackward > minSpeedBackward){
-            speed -= speedDecTurnBackward;
-        }else{
-            speed = minSpeedBackward;
+            speed = minSpeed;
         }
     }
 
