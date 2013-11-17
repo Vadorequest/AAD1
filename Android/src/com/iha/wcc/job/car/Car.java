@@ -162,7 +162,8 @@ public class Car {
 
     /**
      * Calculate the new speed.
-     * @param direction The direction of the car.
+     * @param direction The new direction of the car.
+     *                  Not really the direction, but the button pressed, for instance, press the FORWARD button car be done in the BACKWARD sens, in this case, it will just slow down the car, not change the sens.
      */
     public static int calculateSpeed(Direction direction) {
         // Will update the direction automatically once the speed will be calculated.
@@ -194,7 +195,7 @@ public class Car {
                 case FORWARD :
                     if(direction == Direction.BACKWARD){
                         // Deceleration going forward.
-                        autoUpdateDirection = _decelerate(lastDirection, speedDecelerationForward, minSpeedForward);
+                        autoUpdateDirection = _decelerate(speedDecelerationForward, minSpeedForward, lastDirection);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
                         _turn(speedDecTurnForward, minSpeedForward);
@@ -203,7 +204,7 @@ public class Car {
                 case BACKWARD :
                     if(direction == Direction.FORWARD){
                         // Deceleration going backward.
-                        autoUpdateDirection = _decelerate(lastDirection, speedDecelerationBackward, minSpeedBackward);
+                        autoUpdateDirection = _decelerate(speedDecelerationBackward, minSpeedBackward, lastDirection);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
                         _turn(speedDecTurnBackward, minSpeedBackward);
@@ -236,6 +237,8 @@ public class Car {
 
     /**
      * Increase the speed depending on the sens of the car.
+     * @param speedAcceleration Value of the speed acceleration.
+     * @param maxSpeed Maximal speed value.
      */
     private static void _accelerate(int speedAcceleration, int maxSpeed) {
         if(speed + speedAcceleration < maxSpeed){
@@ -247,8 +250,12 @@ public class Car {
 
     /**
      * Decrease the speed depending on the sens of the car.
+     * @param speedDeceleration Value of the speed deceleration.
+     * @param minSpeed Minimal speed to keep.
+     * @param lastDirection Direction used during the last time.
+     * @return boolean If true that means the script didn't force the direction and it has to be auto updated.
      */
-    private static boolean _decelerate(Direction lastDirection, int speedDeceleration, int minSpeed) {
+    private static boolean _decelerate(int speedDeceleration, int minSpeed, Direction lastDirection) {
         if(speed - speedDeceleration < 0){
             // If we want to change the sens of the car.
             speed = minSpeed;
@@ -275,6 +282,8 @@ public class Car {
 
     /**
      * Update the speed when turning depending on the sens of the car.
+     * @param speedDecTurn The value of the speed to decrement before turn.
+     * @param minSpeed Minimal speed to keep.
      */
     private static void _turn(int speedDecTurn, int minSpeed) {
         if(speed - speedDecTurn > minSpeed){
@@ -286,7 +295,7 @@ public class Car {
 
     /**
      * Stop the car.
-     * @return speed The actual speed of the car.
+     * @return int The actual speed of the car.
      */
     private static int _stop(){
         // Stop the car.
@@ -311,42 +320,73 @@ public class Car {
      ******************************************* GETTERS *****************************************
      */
 
-    public static int getMinSpeedBackward() {
-        return minSpeedBackward;
-    }
 
+    /**
+     * Each time forward is called the speed is increased if the car is going forward.
+     */
     public static int getSpeedAccelerationForward() {
         return speedAccelerationForward;
     }
 
+    /**
+     * Each time backward is called the speed is increased if the car is going backward.
+     */
     public static int getSpeedAccelerationBackward() {
         return speedAccelerationBackward;
     }
 
+    /**
+     * Each time backward is called the speed is decreased if the car is going forward.
+     */
     public static int getSpeedDecelerationForward() {
         return speedDecelerationForward;
     }
 
+    /**
+     * Each time forward is called the speed is decreased if the car is going backward.
+     */
     public static int getSpeedDecelerationBackward() {
         return speedDecelerationBackward;
     }
 
+    /**
+     * Speed is decremented when we turn going forward.
+     */
     public static int getSpeedDecTurnForward() {
         return speedDecTurnForward;
     }
 
+    /**
+     * Speed is decremented when we turn going backward.
+     */
     public static int getSpeedDecTurnBackward() {
         return speedDecTurnBackward;
     }
 
-    public static int getMaxSpeedForward() {
-        return maxSpeedForward;
-    }
-
+    /**
+     * Minimal speed available for forward direction.
+     */
     public static int getMinSpeedForward() {
         return minSpeedForward;
     }
 
+    /**
+     * Maximal speed available for forward direction.
+     */
+    public static int getMaxSpeedForward() {
+        return maxSpeedForward;
+    }
+
+    /**
+     * Minimal speed available for backward direction.
+     */
+    public static int getMinSpeedBackward() {
+        return minSpeedBackward;
+    }
+
+    /**
+     * Maximal speed available for backward direction.
+     */
     public static int getMaxSpeedBackward() {
         return maxSpeedBackward;
     }
