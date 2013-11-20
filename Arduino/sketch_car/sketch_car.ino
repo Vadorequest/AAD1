@@ -43,7 +43,6 @@ void setup() {
   server.begin();
 
   Serial.begin(9600);
-  while(!Serial); // wait for a serial connection 
 }
 
 void loop() {
@@ -52,6 +51,7 @@ void loop() {
 
   // There is a new client?
   if (client) {
+    client.setTimeout(5);// Change the predifined timeout from 2000 to 5.
     Serial.println("Client connected!");
   
     while(client.connected()){	
