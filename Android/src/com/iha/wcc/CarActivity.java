@@ -394,7 +394,7 @@ public class CarActivity extends FragmentActivity {
 
     /**
      * Send a message using the socket connection to the Arduino.
-     * @param action
+     * @param action Action to execute.
      */
     private void send(String action){
         this.send(action, String.valueOf(Car.speed));
@@ -403,8 +403,8 @@ public class CarActivity extends FragmentActivity {
     /**
      * Send a message using the socket connection to the Arduino.
      * Send params instead of the speed.
-     * @param action
-     * @param params
+     * @param action Action to execute.
+     * @param params Params to the action.
      */
     private void send(String action, String params){
         // Send the message in the socket pool.
@@ -413,7 +413,19 @@ public class CarActivity extends FragmentActivity {
         // Refresh the displayed speed in the view.
         speedText.setText(Car.speed + " Km/h");
 
+        // Update the direction displayed on the view.
+        this.updateDirection(Car.lastDirection);
+
         log("Speed: " + Car.speed + " | Direction: " + Car.lastDirection);
+    }
+
+    /**
+     * Update the direction displayed on the view.
+     * @param direction New direction of the car.
+     * @TODO Use an image or something more beautiful.
+     */
+    private void updateDirection(Car.Direction direction) {
+        speedText.setText((direction == Car.Direction.FORWARD ? "+" : (direction == Car.Direction.BACKWARD ? "-" : speedText.getText().charAt(0) + "")) + speedText.getText().toString());
     }
 
     /**

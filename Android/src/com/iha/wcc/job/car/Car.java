@@ -47,7 +47,7 @@ public class Car {
     /**
      * Each time forward is called the speed is increased if the car is going forward.
      */
-    private static int speedAccelerationForward = 5;
+    private static int speedAccelerationForward = 2;
 
     /**
      * Each time backward is called the speed is increased if the car is going backward.
@@ -57,7 +57,7 @@ public class Car {
     /**
      * Each time backward is called the speed is decreased if the car is going forward.
      */
-    private static int speedDecelerationForward = 10;
+    private static int speedDecelerationForward = 4;
 
     /**
      * Each time forward is called the speed is decreased if the car is going backward.
@@ -77,7 +77,7 @@ public class Car {
     /**
      * Minimal speed available for forward direction.
      */
-    private static int minSpeedForward = 5;
+    private static int minSpeedForward = 70;
 
     /**
      * Maximal speed available for forward direction.
@@ -87,7 +87,7 @@ public class Car {
     /**
      * Minimal speed available for backward direction.
      */
-    private static int minSpeedBackward = 2;
+    private static int minSpeedBackward = 100;
 
     /**
      * Maximal speed available for backward direction.
@@ -101,7 +101,7 @@ public class Car {
     /**
      * Speed of the car.
      */
-    public static int speed = 0;
+    public static int speed = 100;
 
     /**
      * Last direction used by the car. Stopped by default.
@@ -195,7 +195,7 @@ public class Car {
                 case FORWARD :
                     if(direction == Direction.BACKWARD){
                         // Deceleration going forward.
-                        autoUpdateDirection = _decelerate(speedDecelerationForward, minSpeedForward, lastDirection);
+                        autoUpdateDirection = _decelerate(speedDecelerationForward, minSpeedForward, minSpeedBackward, lastDirection);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
                         _turn(speedDecTurnForward, minSpeedForward);
@@ -204,7 +204,7 @@ public class Car {
                 case BACKWARD :
                     if(direction == Direction.FORWARD){
                         // Deceleration going backward.
-                        autoUpdateDirection = _decelerate(speedDecelerationBackward, minSpeedBackward, lastDirection);
+                        autoUpdateDirection = _decelerate(speedDecelerationBackward, minSpeedBackward, minSpeedForward, lastDirection);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
                         _turn(speedDecTurnBackward, minSpeedBackward);
@@ -252,16 +252,17 @@ public class Car {
      * Decrease the speed depending on the sens of the car.
      * @param speedDeceleration Value of the speed deceleration.
      * @param minSpeed Minimal speed to keep.
+     * @param minSpeedOppositeSens Minimal speed to use if we change the sens of the car.
      * @param lastDirection Direction used during the last time.
      * @return boolean If true that means the script didn't force the direction and it has to be auto updated.
      */
-    private static boolean _decelerate(int speedDeceleration, int minSpeed, Direction lastDirection) {
-        if(speed - speedDeceleration < 0){
+    private static boolean _decelerate(int speedDeceleration, int minSpeed, int minSpeedOppositeSens, Direction lastDirection) {
+        if(speed - speedDeceleration < minSpeed){
             // If we want to change the sens of the car.
-            speed = minSpeed;
+            speed = minSpeedOppositeSens;
             return true;
 
-        }else if(speed - speedDeceleration > 0){
+        }else if(speed - speedDeceleration >= minSpeed){
             // We decelerate going backward.
             speed -= speedDeceleration;
 
@@ -272,11 +273,7 @@ public class Car {
             return false;
 
         }else{
-            // We stop the car.
-            _stop();
-
-            // We changed manually the direction, don't auto update the direction. (It would be wrong)
-            return false;
+            return true;
         }
     }
 
