@@ -205,64 +205,92 @@ public class CarActivity extends FragmentActivity {
 	 * Bind all button listeners. (called during the initialization)
 	 */
 	private void initializeListeners(){
-		// On click, take a picture.
-		this.pictureBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				doPhoto();
-			}
-		});
-		
-		// On click, sound a honk.
-		this.honkBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				doHonk();
-			}
-		});
-		
-		// On click, go to the settings page.
-		this.settingsBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				displaySettings();
-			}
-		});
-
-        // Use onClick event is better for debug but worse for real use.
-        // On click, go forward.
-		this.goForwardBtn.setOnClickListener(new OnClickListener() {
+        /*
+        ******** Forward **********
+         */
+        this.goForwardBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 goForward();
             }
         });
 
-		// On click, go backward.
-		this.goBackwardBtn.setOnClickListener(new OnClickListener() {
+        this.goForwardBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                goForward();
+                return false;
+            }
+        });
+
+        this.goForwardBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                goForward();
+                return false;
+            }
+        });
+
+        /*
+        ******** Backward **********
+         */
+        this.goBackwardBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 goBackward();
             }
         });
 
-		// On click, go to the left.
-		this.goLeftBtn.setOnClickListener(new OnClickListener() {
+        this.goBackwardBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                goLeft();
+            public boolean onTouch(View v, MotionEvent event) {
+                goBackward();
+                return false;
             }
         });
 
-		// On click, go to the right.
-		this.goRightBtn.setOnClickListener(new OnClickListener() {
+        this.goBackwardBtn.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                goRight();
+            public boolean onLongClick(View v) {
+                goBackward();
+                return false;
             }
         });
 
-        // On click, stop the car.
+		/*
+        ******** Left **********
+         */
+        this.goLeftBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE){
+                    goLeft();
+                }else if(event.getAction() == MotionEvent.ACTION_UP){
+                    stopTurn();
+                }
+
+                return false;
+            }
+        });
+
+		/*
+        ******** Right **********
+         */
+        this.goRightBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE){
+                    goRight();
+                }else if(event.getAction() == MotionEvent.ACTION_UP){
+                    stopTurn();
+                }
+                return false;
+            }
+        });
+
+        /*
+        ******** Stop **********
+         */
         this.doStopBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,40 +298,46 @@ public class CarActivity extends FragmentActivity {
             }
         });
 
-        // Use onTouch event send to much queries, bad for debug but should be the final way to do it.
-		// On touch, go forward.
-		this.goForwardBtn.setOnTouchListener(new View.OnTouchListener() {
+        /*
+        ******** Picture **********
+         */
+        this.pictureBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doPhoto();
+            }
+        });
+
+        /*
+        ******** Honk **********
+         */
+        this.honkBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE){
+                    // Touch is active, do honk.
+                    doHonk();
+                }
+
+                return false;
+            }
+        });
+
+        this.honkBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                doHonk();
+                return false;
+            }
+        });
+
+		/*
+        ******** Settings **********
+         */
+		this.settingsBtn.setOnClickListener(new OnClickListener() {
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				goForward();
-				return false;
-			}
-		});
-		
-		// On touch, go backward.
-		this.goBackwardBtn.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				goBackward();
-				return false;
-			}
-		});
-		
-		// On touch, go to the left.
-		this.goLeftBtn.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				goLeft();
-				return false;
-			}
-		});
-		
-		// On touch, go to the right.
-		this.goRightBtn.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				goRight();
-				return false;
+			public void onClick(View v) {
+				displaySettings();
 			}
 		});
 	}
@@ -344,15 +378,22 @@ public class CarActivity extends FragmentActivity {
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
-        send(Car.calculateSpeed(Car.Direction.LEFT));
+        send(Car.calculateSpeed(Car.Direction.LEFT), "200");// 100 for the force motor rear wheels. TODO use setting value.
 	}
-	
-	/**
-	 * Send a request to the car to go to the right.
-	 */
-	private void goRight(){
-        send(Car.calculateSpeed(Car.Direction.RIGHT));
-	}
+
+    /**
+     * Send a request to the car to go to the right.
+     */
+    private void goRight(){
+        send(Car.calculateSpeed(Car.Direction.RIGHT), "200");// 100 for the force motor rear wheels.
+    }
+
+    /**
+     * Send a request to the car to stop turn.
+     */
+    private void stopTurn(){
+        send("stopTurn");
+    }
 
 	/**
 	 * Send a request to the car to go to the right.
@@ -410,8 +451,6 @@ public class CarActivity extends FragmentActivity {
 
         // Update the direction displayed on the view.
         this.updateViewDirection(Car.lastDirection);
-
-        log("Speed: " + Car.speed + " | Direction: " + Car.lastDirection);
     }
 
     /**

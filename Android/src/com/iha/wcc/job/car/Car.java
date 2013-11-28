@@ -1,5 +1,7 @@
 package com.iha.wcc.job.car;
 
+import android.util.Log;
+
 /**
  * Class that represents the current controlled car.
  * Contains all values about it, manage the direction and the speed of the car for each user request.
@@ -41,28 +43,28 @@ public class Car {
     public final static int MAX_ADAFRUIT_MOTORSHIELD_SPEED_DECELERATION = MAX_ADAFRUIT_MOTORSHIELD_SPEED;
 
     /*
-     ******************************************* PRIVATE SETTINGS *****************************************
+     ******************************************* PRIVATE DEFAULT SETTINGS *****************************************
      */
 
     /**
      * Each time forward is called the speed is increased if the car is going forward.
      */
-    private static int speedAccelerationForward = 2;
+    private static int speedAccelerationForward = 1;
 
     /**
      * Each time backward is called the speed is increased if the car is going backward.
      */
-    private static int speedAccelerationBackward = 2;
+    private static int speedAccelerationBackward = 1;
 
     /**
      * Each time backward is called the speed is decreased if the car is going forward.
      */
-    private static int speedDecelerationForward = 4;
+    private static int speedDecelerationForward = 2;
 
     /**
      * Each time forward is called the speed is decreased if the car is going backward.
      */
-    private static int speedDecelerationBackward = 4;
+    private static int speedDecelerationBackward = 2;
 
     /**
      * Speed is decremented when we turn going forward.
@@ -77,22 +79,22 @@ public class Car {
     /**
      * Minimal speed available for forward direction.
      */
-    private static int minSpeedForward = 70;
+    private static int minSpeedForward = 130;
 
     /**
      * Maximal speed available for forward direction.
      */
-    private static int maxSpeedForward = 255;
+    private static int maxSpeedForward = 190;
 
     /**
      * Minimal speed available for backward direction.
      */
-    private static int minSpeedBackward = 100;
+    private static int minSpeedBackward = 130;
 
     /**
      * Maximal speed available for backward direction.
      */
-    private static int maxSpeedBackward = 150;
+    private static int maxSpeedBackward = 190;
 
     /*
      ******************************************* VARIABLES *****************************************
@@ -101,12 +103,17 @@ public class Car {
     /**
      * Speed of the car.
      */
-    public static int speed = 100;
+    public static int speed = 70;
 
     /**
      * Last direction used by the car. Stopped by default.
      */
     public static Direction lastDirection = Direction.STOP;
+
+    /**
+     * Last sens where the car was going. Useful to avoid change of sens after a LEFT/RIGHT action.
+     */
+    public static Direction lastSens = Direction.STOP;
 
     /**
      * List of available directions.
@@ -119,12 +126,19 @@ public class Car {
         STOP
     };
 
+    /**
+     * Will update the direction automatically once the speed will be calculated.
+     * DEFAULT VALUE MUST BE TRUE, for each call to calculateSpeed().
+     */
+    private static boolean autoUpdateDirection = true;
+
     /*
      ******************************************* METHODS *****************************************
      */
 
     /**
      * Change the settings of the car. Check each setting before set to protect the motor engine.
+     * If not set, the application will use the default values.
      * @param speedAccelerationForward
      * @param speedAccelerationBackward
      * @param speedDecelerationForward
@@ -167,9 +181,6 @@ public class Car {
      * @return String   The last direction calculated.
      */
     public static String calculateSpeed(Direction direction) {
-        // Will update the direction automatically once the speed will be calculated.
-        boolean autoUpdateDirection = true;
-
         // If we ask to stop, just stop.
         if(direction == Direction.STOP){
             _stop();
@@ -197,7 +208,7 @@ public class Car {
                 case FORWARD :
                     if(direction == Direction.BACKWARD){
                         // Deceleration going forward.
-                        autoUpdateDirection = _decelerate(speedDecelerationForward, minSpeedForward, minSpeedBackward, lastDirection);
+                        _decelerate(speedDecelerationForward, minSpeedForward, minSpeedBackward);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
                         _turn(speedDecTurnForward, minSpeedForward);
@@ -206,7 +217,7 @@ public class Car {
                 case BACKWARD :
                     if(direction == Direction.FORWARD){
                         // Deceleration going backward.
-                        autoUpdateDirection = _decelerate(speedDecelerationBackward, minSpeedBackward, minSpeedForward, lastDirection);
+                        _decelerate(speedDecelerationBackward, minSpeedBackward, minSpeedForward);
                     } else if (direction == Direction.LEFT || direction == Direction.RIGHT){
                         // If we turn going forward.
                         _turn(speedDecTurnBackward, minSpeedBackward);
@@ -214,6 +225,30 @@ public class Car {
                     break;
                 case LEFT :
                 case RIGHT :
+                    // Increase the speed depending of the sens used before TURN.
+                    switch (direction){
+                        case FORWARD :
+                            // We are going forward.
+                            if(lastSens == Direction.FORWARD){
+                                // We accelerate in the same sens (going forward), after turned.
+                                _accelerate(speedAccelerationForward, minSpeedForward, maxSpeedForward);
+                            }else if(lastSens == Direction.BACKWARD){
+                                // We decelerate in the same sens (going forward), after turned. (but could change the sens)
+                                _decelerate(speedDecelerationForward, minSpeedForward, minSpeedBackward, lastSens);
+                            }
+                            break;
+                        case BACKWARD :
+                            // We are going backward.
+                            if(lastSens == Direction.BACKWARD){
+                                // We accelerate in the same sens (going backward), after turned.
+                                _accelerate(speedAccelerationBackward, minSpeedBackward, maxSpeedBackward);
+                            }else if(lastSens == Direction.FORWARD){
+                                // We decelerate in the same sens (going backward), after turned. (but could change the sens)
+                                _decelerate(speedDecelerationBackward, minSpeedBackward, minSpeedForward, lastSens);
+                            }
+                            break;
+                    }
+                    break;
                 case STOP :
                     // Increase the speed depending of the direction if we are going forward or backward.
                     switch (direction){
@@ -231,8 +266,14 @@ public class Car {
         // Update the last direction used.
         if(autoUpdateDirection){
             _saveNewDirection(direction);
+        }else{
+            // Re init to true for the next time. (Default TRUE)
+            autoUpdateDirection = true;
         }
-
+        /*Log.d("Car", "-----------------");
+        Log.d("Car", "Sens:"+lastSens);
+        Log.d("Car", "Direction:"+lastDirection);
+        Log.d("Car", "Speed:"+speed);*/
         // Return the new speed to use.
         return _formatLastDirection();
     }
@@ -257,32 +298,37 @@ public class Car {
     }
 
     /**
-     * Decrease the speed depending on the sens of the car.
+     * Decrease the speed depending on the sens of the car. Can also change the sens of the car.
      * @param speedDeceleration Value of the speed deceleration.
      * @param minSpeed Minimal speed to keep.
      * @param minSpeedOppositeSens Minimal speed to use if we change the sens of the car.
-     * @param lastDirection Direction used during the last time.
-     * @return boolean If true that means the script didn't force the direction and it has to be auto updated.
+     * @param newDirection New direction to use. [lastDirection]
      */
-    private static boolean _decelerate(int speedDeceleration, int minSpeed, int minSpeedOppositeSens, Direction lastDirection) {
+    private static void _decelerate(int speedDeceleration, int minSpeed, int minSpeedOppositeSens, Direction newDirection) {
         if(speed - speedDeceleration < minSpeed){
             // If we want to change the sens of the car.
             speed = minSpeedOppositeSens;
-            return true;
 
         }else if(speed - speedDeceleration >= minSpeed){
             // We decelerate going backward.
             speed -= speedDeceleration;
 
             // Don't change the sens of the car, we just decelerate.
-            _saveNewDirection(lastDirection);
+            _saveNewDirection(newDirection);
 
             // We changed manually the direction, don't auto update the direction. (It would be wrong)
-            return false;
-
-        }else{
-            return true;
+            autoUpdateDirection = false;
         }
+    }
+
+    /**
+     * Decrease the speed depending on the sens of the car. Can also change the sens of the car.
+     * @param speedDeceleration Value of the speed deceleration.
+     * @param minSpeed Minimal speed to keep.
+     * @param minSpeedOppositeSens Minimal speed to use if we change the sens of the car.
+     */
+    private static void _decelerate(int speedDeceleration, int minSpeed, int minSpeedOppositeSens) {
+        _decelerate(speedDeceleration, minSpeed, minSpeedOppositeSens, lastDirection);
     }
 
     /**
@@ -319,6 +365,17 @@ public class Car {
      */
     private static void _saveNewDirection(Direction direction){
         lastDirection = direction;
+        _saveNewSens();
+    }
+
+    /**
+     * Update the lastSens when the lastDirection is a sens. (Not a simple direction/action)
+     */
+    private static void _saveNewSens() {
+        // If the last direction was a sens, refresh it.
+        if(lastDirection == Direction.BACKWARD || lastDirection == Direction.FORWARD){
+            lastSens = lastDirection;
+        }
     }
 
     /**
