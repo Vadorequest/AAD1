@@ -181,10 +181,10 @@ public class Car {
             // We keep the same direction.
             switch (direction){
                 case FORWARD :
-                    _accelerate(speedAccelerationForward, maxSpeedForward);
+                    _accelerate(speedAccelerationForward, minSpeedForward, maxSpeedForward);
                     break;
                 case BACKWARD :
-                    _accelerate(speedAccelerationBackward, maxSpeedBackward);
+                    _accelerate(speedAccelerationBackward, minSpeedBackward, maxSpeedBackward);
                     break;
                 case LEFT :
                 case RIGHT :
@@ -218,10 +218,10 @@ public class Car {
                     // Increase the speed depending of the direction if we are going forward or backward.
                     switch (direction){
                         case FORWARD :
-                            _accelerate(speedAccelerationForward, maxSpeedForward);
+                            _accelerate(speedAccelerationForward, minSpeedForward, maxSpeedForward);
                             break;
                         case BACKWARD :
-                            _accelerate(speedAccelerationBackward, maxSpeedBackward);
+                            _accelerate(speedAccelerationBackward, minSpeedBackward, maxSpeedBackward);
                             break;
                     }
                     break;
@@ -240,13 +240,19 @@ public class Car {
     /**
      * Increase the speed depending on the sens of the car.
      * @param speedAcceleration Value of the speed acceleration.
+     * @param maxSpeed Minimal speed value.
      * @param maxSpeed Maximal speed value.
      */
-    private static void _accelerate(int speedAcceleration, int maxSpeed) {
-        if(speed + speedAcceleration < maxSpeed){
-            speed += speedAcceleration;
-        }else{
+    private static void _accelerate(int speedAcceleration, int minSpeed, int maxSpeed) {
+        if(speed + speedAcceleration >= maxSpeed){
+            // Don't exceed the max value.
             speed = maxSpeed;
+        }else if(speed + speedAcceleration < minSpeed){
+            // Don't exceed the min value.
+            speed = minSpeed;
+        }else if(speed + speedAcceleration < maxSpeed){
+            // Increase the speed.
+            speed += speedAcceleration;
         }
     }
 
