@@ -330,40 +330,35 @@ public class CarActivity extends FragmentActivity {
 	 * Send a request to the car to go forward.
 	 */
 	private void goForward(){
-        Car.calculateSpeed(Car.Direction.FORWARD);
-        send("forward");
+        send(Car.calculateSpeed(Car.Direction.FORWARD));
 	}
 	
 	/**
 	 * Send a request to the car to go backward.
 	 */
 	private void goBackward(){
-        Car.calculateSpeed(Car.Direction.BACKWARD);
-        send("backward");
+        send(Car.calculateSpeed(Car.Direction.BACKWARD));
 	}
 	
 	/**
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
-        Car.calculateSpeed(Car.Direction.LEFT);
-        send("left");
+        send(Car.calculateSpeed(Car.Direction.LEFT));
 	}
 	
 	/**
 	 * Send a request to the car to go to the right.
 	 */
 	private void goRight(){
-        Car.calculateSpeed(Car.Direction.RIGHT);
-        send("right");
+        send(Car.calculateSpeed(Car.Direction.RIGHT));
 	}
 
 	/**
 	 * Send a request to the car to go to the right.
 	 */
 	private void doStop(){
-        Car.calculateSpeed(Car.Direction.STOP);
-        send("stop");
+        send(Car.calculateSpeed(Car.Direction.STOP));
 	}
 	
 	/**

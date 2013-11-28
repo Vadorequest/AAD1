@@ -164,14 +164,16 @@ public class Car {
      * Calculate the new speed.
      * @param direction The new direction of the car.
      *                  Not really the direction, but the button pressed, for instance, press the FORWARD button car be done in the BACKWARD sens, in this case, it will just slow down the car, not change the sens.
+     * @return String   The last direction calculated.
      */
-    public static int calculateSpeed(Direction direction) {
+    public static String calculateSpeed(Direction direction) {
         // Will update the direction automatically once the speed will be calculated.
         boolean autoUpdateDirection = true;
 
         // If we ask to stop, just stop.
         if(direction == Direction.STOP){
-            return _stop();
+            _stop();
+            return _formatLastDirection();
         }
 
         // Else it's a little more funny. (Wrote at 2 a.m)
@@ -232,7 +234,7 @@ public class Car {
         }
 
         // Return the new speed to use.
-        return speed;
+        return _formatLastDirection();
     }
 
     /**
@@ -311,6 +313,14 @@ public class Car {
      */
     private static void _saveNewDirection(Direction direction){
         lastDirection = direction;
+    }
+
+    /**
+     * Format the lastDirection calculated by the program.
+     * @return The last direction converted in string and toLowerCase.
+     */
+    private static String _formatLastDirection(){
+        return lastDirection.toString().toLowerCase();
     }
 
     /*
