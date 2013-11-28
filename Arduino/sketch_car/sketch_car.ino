@@ -1,5 +1,4 @@
 #include <Adafruit_MotorShield.h>
-
 #include "utility/Adafruit_PWMServoDriver.h"
 #include <Bridge.h>
 #include <Console.h>
@@ -10,14 +9,13 @@
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 // Select which 'port' M1, M2, M3 or M4. In this case, M1
-Adafruit_DCMotor *frontWheels = AFMS.getMotor(2);
+Adafruit_DCMotor *frontWheels = AFMS.getMotor(3);
 // You can also make another motor on port M2
-Adafruit_DCMotor *rearWheels = AFMS.getMotor(1);
+Adafruit_DCMotor *rearWheels = AFMS.getMotor(4);
 
-const int ledPin = 13; // the pin that the LED is attached to
+const int ledPin = 13; 
 
-// We open the socket 5555 to communicate.
-YunServer server(5555);
+YunServer server(5555); //socket 5555 to communicate.
 
 void setup() {
   // Bridge startup
@@ -27,16 +25,14 @@ void setup() {
 
   AFMS.begin();  // create with the default frequency 1.6KHz
 
-  // Set the speed to start, from 0 (off) to 255 (max speed)
-  frontWheels->setSpeed(0);
+  // Set the speed to start, from 70 to 255 (max speed). 0 (off) 
+  frontWheels->setSpeed(0); 
   frontWheels->run(FORWARD);
-  // turn on motor
   frontWheels->run(RELEASE);
 
-  //OTHER MOTOR
-  rearWheels->setSpeed(0);
+  //'turning' MOTOR
+  rearWheels->setSpeed(0); 
   rearWheels->run(FORWARD);
-  // turn on motor
   rearWheels->run(RELEASE);
 
   server.noListenOnLocalhost();
@@ -49,80 +45,82 @@ void loop() {
   // Get clients coming from server
   YunClient client = server.accept();
 
-  // There is a new client?
+  // There is a new client
   if (client) {
     client.setTimeout(5);// Change the predifined timeout from 2000 to 5.
     Serial.println("Client connected!");
-  
+
     while(client.connected()){	
       // Process request
       process(client);
     }
-
     // Close connection and free resources.
     client.stop();
-  }else {
+  }
+  else {
     Serial.println("no client connected, retrying");
   }
-
-  delay(1000);
+  delay(1000);    /// why? For the battery. Doesn't affect the response time.
 }
 
 void process(YunClient client) {
   // Format: COMMAND/SPEED
   String command = client.readStringUntil('/');  
-//Serial.println("QueryX:"+client.readString());  
+  //Serial.println("QueryX:"+client.readString());  
   int speed = client.parseInt();
-   
-  
+
   if (command == "forward") {
-        client.print(F("forward"));
-        Serial.println("forward");  
-	rearWheels->run(RELEASE);
-	rearWheels->setSpeed(255);
-	rearWheels->run(FORWARD);
+    client.print(F("forward"));
+    Serial.println("forward");  
+    frontWheels->run(RELEASE);
+    frontWheels->setSpeed(100);
+    frontWheels->run(FORWARD);
   }
   else if (command == "backward") {
-        client.print(F("backward"));
-        Serial.println("backward"); 
-	rearWheels->run(RELEASE);
-	rearWheels->setSpeed(255);
-	rearWheels->run(BACKWARD);
+    client.print(F("backward"));
+    Serial.println("backward"); 
+    frontWheels->run(RELEASE);
+    frontWheels->setSpeed(100);
+    frontWheels->run(BACKWARD);
   }
   else if (command == "left") {
-        client.print(F("left"));
-        Serial.println("left"); 
-	frontWheels->run(RELEASE);
-	frontWheels->setSpeed(150);
-	frontWheels->run(FORWARD);
+    client.print(F("left"));
+    Serial.println("left"); 
+    rearWheels->run(RELEASE);
+    rearWheels->setSpeed(100);
+    rearWheels->run(BACKWARD);
   }
   else if(command == "right"){
-        client.print(F("right"));
-        Serial.println("right"); 
-	frontWheels->run(RELEASE);
-	frontWheels->setSpeed(150);
-	frontWheels->run(BACKWARD);
+    client.print(F("right"));
+    Serial.println("right"); 
+    rearWheels->run(RELEASE);
+    rearWheels->setSpeed(200);
+    rearWheels->run(FORWARD);
   }
   else if(command == "stop"){
-        client.print(F("stop"));
-        Serial.println("stop"); 
-	rearWheels->run(RELEASE);
-	frontWheels->run(RELEASE);
+    client.print(F("stop"));
+    Serial.println("stop"); 
+    rearWheels->run(RELEASE);
+    frontWheels->run(RELEASE);
+  }
+  else if(command == "stopTurn"){
+    client.print(F("stopTurn"));
+    Serial.println("stopTurn"); 
+    rearWheels->run(RELEASE);// Stop turn
   }
   else if(command == "photo"){
     client.print(F("photo"));
     Serial.println("photo"); 
-	// TODO Take a photo
+    // TODO Take a photo
   }
   else if(command == "honk"){
     client.print(F("honk"));
     Serial.println("honk"); 
-	// TODO Play a sound
+    tone(8, 440, 1000);  //(PinNumber, Note, duration)
   }
   else if(command == "settings"){
     client.print(F("settings"));
     Serial.println("settings"); 
-	// TODO Load settings
+    // TODO Load settings
   }
 }
-
