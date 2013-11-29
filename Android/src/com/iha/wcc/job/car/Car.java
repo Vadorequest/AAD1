@@ -79,22 +79,27 @@ public class Car {
     /**
      * Minimal speed available for forward direction.
      */
-    private static int minSpeedForward = 130;
+    private static int minSpeedForward = 25;
 
     /**
      * Maximal speed available for forward direction.
      */
-    private static int maxSpeedForward = 190;
+    private static int maxSpeedForward = 250;
 
     /**
      * Minimal speed available for backward direction.
      */
-    private static int minSpeedBackward = 130;
+    private static int minSpeedBackward = 25;
 
     /**
      * Maximal speed available for backward direction.
      */
-    private static int maxSpeedBackward = 190;
+    private static int maxSpeedBackward = 250;
+
+    /**
+     * Speed to use when you turn, will change the degree of the forwards wheels.
+     */
+    private static int speedTurnMotor = 100;
 
     /*
      ******************************************* VARIABLES *****************************************
@@ -103,7 +108,7 @@ public class Car {
     /**
      * Speed of the car.
      */
-    public static int speed = 70;
+    public static int speed = minSpeedForward;
 
     /**
      * Last direction used by the car. Stopped by default.
@@ -459,5 +464,12 @@ public class Car {
      */
     public static int getMaxSpeedBackward() {
         return maxSpeedBackward;
+    }
+
+    /**
+     * Speed to use when you turn, will change the degree of the forwards wheels.
+     */
+    public static int getSpeedTurnMotor() {
+        return speedTurnMotor;
     }
 }

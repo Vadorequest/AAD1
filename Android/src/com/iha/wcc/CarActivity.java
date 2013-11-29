@@ -378,14 +378,14 @@ public class CarActivity extends FragmentActivity {
 	 * Send a request to the car to go to the left.
 	 */
 	private void goLeft(){
-        send(Car.calculateSpeed(Car.Direction.LEFT), "200");// 100 for the force motor rear wheels. TODO use setting value.
+        send(Car.calculateSpeed(Car.Direction.LEFT), Car.getSpeedTurnMotor()+"");// 100 for the force motor rear wheels. TODO use setting value.
 	}
 
     /**
      * Send a request to the car to go to the right.
      */
     private void goRight(){
-        send(Car.calculateSpeed(Car.Direction.RIGHT), "200");// 100 for the force motor rear wheels.
+        send(Car.calculateSpeed(Car.Direction.RIGHT), Car.getSpeedTurnMotor()+"");// 100 for the force motor rear wheels.
     }
 
     /**
