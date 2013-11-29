@@ -99,11 +99,11 @@ void process(YunClient client) {
     //return;// DEBUG
     
     // Read the '/' char and remove it from "client".
-    client.read();
+    //client.read();
     
     // Parse the speed. TODO: Don't do that for "settings". We'll see how the settings string will be written later.
     int speed = client.parseInt();
-     
+    Serial.println((String) speed);
     if (command == "forward") {
       client.print(F("forward"));
       Serial.println("forward");  
@@ -121,13 +121,13 @@ void process(YunClient client) {
     else if (command == "left") {
       client.print(F("left"));
       Serial.println("left"); 
-      rearWheels->setSpeed(100);// If use speed, doesn't works. (Bad parsing)
+      rearWheels->setSpeed(speed);// If use speed, doesn't works. (Bad parsing)
       rearWheels->run(BACKWARD);
     }
     else if(command == "right"){
       client.print(F("right"));
       Serial.println("right"); 
-      rearWheels->setSpeed(100);// If use speed, doesn't works. (Bad parsing)
+      rearWheels->setSpeed(speed);// If use speed, doesn't works. (Bad parsing)
       rearWheels->run(FORWARD);
     }
     else if(command == "stop"){
