@@ -8,8 +8,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.iha.wcc.job.car.Car;
 
 public class CarActivity extends FragmentActivity {
@@ -425,7 +426,9 @@ public class CarActivity extends FragmentActivity {
         this.doStop();
 
         // Load the settings interface.
-		Toast.makeText(context, "I don't know really how did that in only one screen guys! We should discuss about :)", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, "I don't know really how did that in only one screen guys! We should discuss about :)", Toast.LENGTH_SHORT).show();
+        Intent intentSettings = new Intent(this, SettingsActivity.class);
+        startActivity(intentSettings);
 	}
 
     /**
