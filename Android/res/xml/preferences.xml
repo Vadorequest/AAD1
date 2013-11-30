@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="Photo">
+    	<EditTextPreference android:key="photo_frequency" android:title="@string/photo_frequency" android:inputType="number"/>
+    	<CheckBoxPreference android:title="@string/photo_capture" android:key="photo_auto"/>
+    	<EditTextPreference android:key="photo_storage" android:title="@string/photo_storage"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Sound">
+
+    </PreferenceCategory>    
+    <PreferenceCategory android:title="General">
+        <EditTextPreference android:key="speedAccelerationForward" android:title="@string/speedAccelerationForward" android:inputType="number" android:defaultValue="1"/>
+        <EditTextPreference android:key="speedAccelerationBackward" android:title="@string/speedAccelerationBackward" android:inputType="number" android:defaultValue="1"/>
+        <EditTextPreference android:key="speedDecelerationForward" android:title="@string/speedDecelerationForward" android:inputType="number" android:defaultValue="2"/>
+        <EditTextPreference android:key="speedDecelerationBackward" android:title="@string/speedDecelerationBackward" android:inputType="number" android:defaultValue="2"/>
+        <EditTextPreference android:key="speedDecTurnForward" android:title="@string/speedDecTurnForward" android:inputType="number" android:defaultValue="0"/>
+        <EditTextPreference android:key="speedDecTurnBackward" android:title="@string/speedDecTurnBackward" android:inputType="number" android:defaultValue="0"/>
+        <EditTextPreference android:key="minSpeedForward" android:title="@string/minSpeedForward" android:inputType="number" android:defaultValue="25"/>
+        <EditTextPreference android:key="maxSpeedForward" android:title="@string/maxSpeedForward" android:inputType="number" android:defaultValue="250"/>
+        <EditTextPreference android:key="minSpeedBackward" android:title="@string/minSpeedBackward" android:inputType="number" android:defaultValue="25"/>
+        <EditTextPreference android:key="maxSpeedBackward" android:title="@string/maxSpeedBackward" android:inputType="number" android:defaultValue="250"/>
+        <EditTextPreference android:key="speedTurnMotor" android:title="@string/speedTurnMotor" android:inputType="number" android:defaultValue="100"/>
+
+    </PreferenceCategory> 
+    
+</PreferenceScreen>
