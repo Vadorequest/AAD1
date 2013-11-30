@@ -144,16 +144,17 @@ public class Car {
     /**
      * Change the settings of the car. Check each setting before set to protect the motor engine.
      * If not set, the application will use the default values.
-     * @param speedAccelerationForward
-     * @param speedAccelerationBackward
-     * @param speedDecelerationForward
-     * @param speedDecelerationBackward
-     * @param speedDecTurnForward
-     * @param speedDecTurnBackward
-     * @param minSpeedForward
-     * @param maxSpeedForward
-     * @param minSpeedBackward
-     * @param maxSpeedBackward
+     * @param speedAccelerationForward  Each time forward is called the speed is increased if the car is going forward.
+     * @param speedAccelerationBackward Each time backward is called the speed is increased if the car is going backward.
+     * @param speedDecelerationForward  Each time backward is called the speed is decreased if the car is going forward.
+     * @param speedDecelerationBackward Each time forward is called the speed is decreased if the car is going backward.
+     * @param speedDecTurnForward       Speed is decremented when we turn going forward.
+     * @param speedDecTurnBackward      Speed is decremented when we turn going backward.
+     * @param minSpeedForward           Minimal speed available for forward direction.
+     * @param maxSpeedForward           Maximal speed available for forward direction.
+     * @param minSpeedBackward          Minimal speed available for backward direction.
+     * @param maxSpeedBackward          Maximal speed available for backward direction.
+     * @param speedTurnMotor            Speed to use when you turn, will change the degree of the forwards wheels.
      */
     public static void setSettings(int speedAccelerationForward,
                                    int speedAccelerationBackward,
@@ -164,7 +165,8 @@ public class Car {
                                    int minSpeedForward,
                                    int maxSpeedForward,
                                    int minSpeedBackward,
-                                   int maxSpeedBackward){
+                                   int maxSpeedBackward,
+                                   int speedTurnMotor){
 
         // Check settings to respects motor rules. The purpose is to protect the motor engine.
         Car.speedAccelerationForward = (speedAccelerationForward < MIN_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION ? MIN_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION : ((speedAccelerationForward > MAX_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION) ? MAX_ADAFRUIT_MOTORSHIELD_SPEED_ACCELERATION : speedAccelerationForward));
@@ -177,6 +179,7 @@ public class Car {
         Car.maxSpeedForward = maxSpeedForward <= MAX_ADAFRUIT_MOTORSHIELD_SPEED ? maxSpeedForward : MAX_ADAFRUIT_MOTORSHIELD_SPEED;
         Car.minSpeedBackward = minSpeedBackward > MIN_ADAFRUIT_MOTORSHIELD_SPEED ? minSpeedBackward : MIN_ADAFRUIT_MOTORSHIELD_SPEED;
         Car.maxSpeedBackward = maxSpeedBackward <= MAX_ADAFRUIT_MOTORSHIELD_SPEED ? maxSpeedBackward : MAX_ADAFRUIT_MOTORSHIELD_SPEED;
+        Car.speedTurnMotor = speedTurnMotor < MAX_ADAFRUIT_MOTORSHIELD_SPEED ? (speedTurnMotor > MIN_ADAFRUIT_MOTORSHIELD_SPEED ? speedTurnMotor : MIN_ADAFRUIT_MOTORSHIELD_SPEED) : MAX_ADAFRUIT_MOTORSHIELD_SPEED;
     }
 
     /**
