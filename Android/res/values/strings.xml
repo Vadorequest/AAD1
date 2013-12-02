@@ -25,5 +25,6 @@
     <string name="minSpeedBackward">Minimal speed available backward direction</string>
     <string name="maxSpeedBackward">Maximal speed available for backward direction</string>
     <string name="speedTurnMotor">Speed to use when turning</string>
+    <string name="tones_list">List of tones</string>
 
 </resources>

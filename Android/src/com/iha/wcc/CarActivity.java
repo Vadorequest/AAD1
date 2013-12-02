@@ -10,7 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -71,7 +73,8 @@ public class CarActivity extends FragmentActivity {
      */
     private final Runnable networkRunnable = new Runnable() {
 
-
+   	
+    	
         @Override
         public void run() {
             log("starting network thread");
@@ -167,6 +170,31 @@ public class CarActivity extends FragmentActivity {
             socketThread = new Thread(networkRunnable);
             socketThread.start();
         }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        
+        int speedAccelerationForward = Integer.parseInt(prefs.getString("speedAccelerationForward", "1"));
+        int speedAccelerationBackward = Integer.parseInt(prefs.getString("speedAccelerationBackward", "1"));
+        int speedDecelerationForward = Integer.parseInt(prefs.getString("speedDecelerationForward", "2"));
+        int speedDecelerationBackward = Integer.parseInt(prefs.getString("speedDecelerationBackward", "2"));
+        int speedDecTurnForward = Integer.parseInt(prefs.getString("speedDecTurnForward", "0"));
+        int speedDecTurnBackward = Integer.parseInt(prefs.getString("speedDecTurnBackward", "0"));
+        int minSpeedForward = Integer.parseInt(prefs.getString("minSpeedForward", "25"));
+        int maxSpeedForward = Integer.parseInt(prefs.getString("maxSpeedForward", "250"));
+        int minSpeedBackward = Integer.parseInt(prefs.getString("minSpeedBackward", "25"));
+        int maxSpeedBackward = Integer.parseInt(prefs.getString("maxSpeedBackward", "250"));
+        int speedTurnMotor = Integer.parseInt(prefs.getString("speedTurnMotor", "100"));
+
+        Car.setSettings(speedAccelerationForward,
+                                       speedAccelerationBackward,
+                                       speedDecelerationForward,
+                                       speedDecelerationBackward,
+                                       speedDecTurnForward,
+                                       speedDecTurnBackward,
+                                       minSpeedForward,
+                                       maxSpeedForward,
+                                       minSpeedBackward,
+                                       maxSpeedBackward,
+                                       speedTurnMotor);
         super.onStart();
     }
 
@@ -355,10 +383,6 @@ public class CarActivity extends FragmentActivity {
 		// Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
         serverIpAddress = ip;
 
-        // TODO Send the settings to the car.
-        //send("settings", "SETTINGS...");
-        //Car.setSettings(5, 2, 10, 4, 0, 0, 5, 255, 2, 150);
-        //Car.setSettings(50, 20, 100, 40, 0, 0, 50, 2550, 20, 1500);// Fake settings to test the limits.
 	}
 	
 	/**
@@ -426,7 +450,7 @@ public class CarActivity extends FragmentActivity {
         this.doStop();
 
         // Load the settings interface.
-		//Toast.makeText(context, "I don't know really how did that in only one screen guys! We should discuss about :)", Toast.LENGTH_SHORT).show();
+
         Intent intentSettings = new Intent(this, SettingsActivity.class);
         startActivity(intentSettings);
 	}

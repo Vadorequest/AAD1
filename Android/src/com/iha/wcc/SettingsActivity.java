@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 
 public class SettingsActivity extends PreferenceActivity {
 
-	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+	//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	
 	@SuppressWarnings("deprecation")
 	@Override

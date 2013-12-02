@@ -6,6 +6,7 @@
     	<EditTextPreference android:key="photo_storage" android:title="@string/photo_storage"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Sound">
+        <ListPreference android:key="sound_preferences" android:entries="@array/listDisplayTones" android:entryValues="@array/listReturnTone" android:title="@string/tones_list"/>
 
     </PreferenceCategory>    
     <PreferenceCategory android:title="General">

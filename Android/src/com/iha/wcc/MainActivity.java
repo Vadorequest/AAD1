@@ -6,6 +6,7 @@ import com.iha.wcc.fragment.network.NetworkFragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -20,7 +21,7 @@ import android.widget.ToggleButton;
 
 
 public class MainActivity extends FragmentActivity implements INetworkFragmentInteractionListener{
-
+	
 	/*
 	 * Static instance of itself.
 	 */
