@@ -15,6 +15,11 @@ public class Car {
     public final static int DEFAULT_NETWORK_PORT = 5555;
 
     /*
+     ******************************************* CONSTANTS - Car device settings *****************************************
+     */
+    public final static int DEFAULT_TONE_FREQUENCY = 440;
+
+    /*
      ******************************************* CONSTANTS - Motor rules *****************************************
      */
 

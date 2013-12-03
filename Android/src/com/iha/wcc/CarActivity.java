@@ -377,7 +377,7 @@ public class CarActivity extends FragmentActivity {
         // Get settings.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // Update car settings.
+        // Update android Car class settings.
         Car.setSettings(
                 Integer.parseInt(prefs.getString("speedAccelerationForward", String.valueOf(Car.getSpeedAccelerationForward()))),
                 Integer.parseInt(prefs.getString("speedAccelerationBackward", String.valueOf(Car.getSpeedAccelerationBackward()))),
@@ -390,6 +390,9 @@ public class CarActivity extends FragmentActivity {
                 Integer.parseInt(prefs.getString("minSpeedBackward", String.valueOf(Car.getMinSpeedBackward()))),
                 Integer.parseInt(prefs.getString("maxSpeedBackward", String.valueOf(Car.getMaxSpeedBackward()))),
                 Integer.parseInt(prefs.getString("speedTurnMotor", String.valueOf(Car.getSpeedTurnMotor()))));
+
+        // Update arduino Car device settings.
+        this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)));// TODO: More settings.
     }
 	
 	/**

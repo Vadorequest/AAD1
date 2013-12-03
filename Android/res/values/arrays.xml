@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="listDisplayTones">
- <item>mid C</item>
- <item>D</item>
- <item>E</item>
- <item>F#</item>
- <item>A</item>
-</string-array>
-<string-array name="listReturnTone">
- <item>261</item>
- <item>294</item>
- <item>330</item>
- <item>370</item>
- <item>440</item> 
-</string-array>
+        <item>mid C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F#</item>
+        <item>A</item>
+    </string-array>
+    <string-array name="listReturnTone">
+        <item>261</item>
+        <item>294</item>
+        <item>330</item>
+        <item>370</item>
+        <item>440</item>
+    </string-array>
 </resources>
