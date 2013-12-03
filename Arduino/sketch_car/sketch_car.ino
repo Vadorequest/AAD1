@@ -90,7 +90,7 @@ void loop() {
 */
 void process(YunClient client) {
   // Format: COMMAND/SPEED
-  String command = client.readStringUntil('/');
+  String command = client.readStringUntil('/');// Get the first element of the command.
   
   // Avoid interferences when there is no request. (Because we are in an infinite loop!)
   if(command.length() > 0){
@@ -98,11 +98,8 @@ void process(YunClient client) {
     //Serial.println("Query:"+client.readString()); 
     //return;// DEBUG
     
-    // Read the '/' char and remove it from "client".
-    //client.read();
-    
-    // Parse the speed. TODO: Don't do that for "settings". We'll see how the settings string will be written later.
-    int speed = client.parseInt();
+    // Parse the speed.
+    int speed = client.parseInt();// Get the second element of the command.
     Serial.println((String) speed);
     if (command == "forward") {
       client.print(F("forward"));
@@ -154,7 +151,9 @@ void process(YunClient client) {
     else if(command == "settings"){
       client.print(F("settings"));
       Serial.println("settings"); 
-      // TODO Load settings
+	  
+	  // Load the custom tone.
+      settingHonkNote = client.parseInt();// Get the third element of the command.
     }
   }
 }
