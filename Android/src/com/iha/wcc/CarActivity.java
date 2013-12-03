@@ -38,10 +38,11 @@ public class CarActivity extends FragmentActivity {
     private final static String TAG_DEBUG = ">==< ArduinoYun >==<";
 
     /**
-     * Information about the server to reach.
+     * Information about the arduino to reach.
+     * Use default values from the Car class if they are not provided.
      */
     private static String serverIpAddress;
-    private static int serverPort = 5555;
+    private static int serverPort;
 
     /**
      * Array of strings that contains all messages to send to the server using sockets.
@@ -160,7 +161,13 @@ public class CarActivity extends FragmentActivity {
 		
 		// Initialize the car and the application.
 		Bundle extras = getIntent().getExtras();
-		this.initializeCar((String)extras.get("name"), (String)extras.get("ip"));
+
+        // Initialize car network to reach. Settings will be updated when on the onStart() method.
+        this.initializeCar(
+            // Use the pre-defined constant as default but try to get custom config if exists to configure the arduino to reach.
+            extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
+            extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
+        );
 	}
 
     @Override
@@ -170,31 +177,10 @@ public class CarActivity extends FragmentActivity {
             socketThread = new Thread(networkRunnable);
             socketThread.start();
         }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        
-        int speedAccelerationForward = Integer.parseInt(prefs.getString("speedAccelerationForward", "1"));
-        int speedAccelerationBackward = Integer.parseInt(prefs.getString("speedAccelerationBackward", "1"));
-        int speedDecelerationForward = Integer.parseInt(prefs.getString("speedDecelerationForward", "2"));
-        int speedDecelerationBackward = Integer.parseInt(prefs.getString("speedDecelerationBackward", "2"));
-        int speedDecTurnForward = Integer.parseInt(prefs.getString("speedDecTurnForward", "0"));
-        int speedDecTurnBackward = Integer.parseInt(prefs.getString("speedDecTurnBackward", "0"));
-        int minSpeedForward = Integer.parseInt(prefs.getString("minSpeedForward", "25"));
-        int maxSpeedForward = Integer.parseInt(prefs.getString("maxSpeedForward", "250"));
-        int minSpeedBackward = Integer.parseInt(prefs.getString("minSpeedBackward", "25"));
-        int maxSpeedBackward = Integer.parseInt(prefs.getString("maxSpeedBackward", "250"));
-        int speedTurnMotor = Integer.parseInt(prefs.getString("speedTurnMotor", "100"));
 
-        Car.setSettings(speedAccelerationForward,
-                                       speedAccelerationBackward,
-                                       speedDecelerationForward,
-                                       speedDecelerationBackward,
-                                       speedDecTurnForward,
-                                       speedDecTurnBackward,
-                                       minSpeedForward,
-                                       maxSpeedForward,
-                                       minSpeedBackward,
-                                       maxSpeedBackward,
-                                       speedTurnMotor);
+        // Load or reload the car settings. TODO Reload only if they was changed, not every time.
+        this.initializeCarSettings();
+
         super.onStart();
     }
 
@@ -374,16 +360,37 @@ public class CarActivity extends FragmentActivity {
 	// The next methods communicate with the car.
 	
 	/**
-	 * Initialize the car, load the local phone settings and send them to the car.
-	 * Save in session useful information about the car.
-	 * @param name Network SSID.
-	 * @param ip IP address of the car.
+	 * Initialize the car such as the arduino settings (ip/port) to reach.
+	 * @param ip    IP address of the car.
+	 * @param port  Port used to communicate with the Arduino.
 	 */
-	private void initializeCar(String name, String ip){
+	private void initializeCar(String ip, int port){
 		// Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
         serverIpAddress = ip;
-
+        serverPort = port;
 	}
+
+    /**
+     * Get the car settings from the local phone settings and send them to the car.
+     */
+    private void initializeCarSettings(){
+        // Get settings.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Update car settings.
+        Car.setSettings(
+                Integer.parseInt(prefs.getString("speedAccelerationForward", String.valueOf(Car.getSpeedAccelerationForward()))),
+                Integer.parseInt(prefs.getString("speedAccelerationBackward", String.valueOf(Car.getSpeedAccelerationBackward()))),
+                Integer.parseInt(prefs.getString("speedDecelerationForward", String.valueOf(Car.getSpeedDecelerationForward()))),
+                Integer.parseInt(prefs.getString("speedDecelerationBackward", String.valueOf(Car.getSpeedDecelerationBackward()))),
+                Integer.parseInt(prefs.getString("speedDecTurnForward", String.valueOf(Car.getSpeedDecTurnForward()))),
+                Integer.parseInt(prefs.getString("speedDecTurnBackward", String.valueOf(Car.getSpeedDecTurnBackward()))),
+                Integer.parseInt(prefs.getString("minSpeedForward", String.valueOf(Car.getMinSpeedForward()))),
+                Integer.parseInt(prefs.getString("maxSpeedForward", String.valueOf(Car.getMaxSpeedForward()))),
+                Integer.parseInt(prefs.getString("minSpeedBackward", String.valueOf(Car.getMinSpeedBackward()))),
+                Integer.parseInt(prefs.getString("maxSpeedBackward", String.valueOf(Car.getMaxSpeedBackward()))),
+                Integer.parseInt(prefs.getString("speedTurnMotor", String.valueOf(Car.getSpeedTurnMotor()))));
+    }
 	
 	/**
 	 * Send a request to the car to go forward.

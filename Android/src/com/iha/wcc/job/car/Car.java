@@ -9,6 +9,12 @@ import android.util.Log;
 public class Car {
 
     /*
+     ******************************************* CONSTANTS - Linino hotspot *****************************************
+     */
+    public final static String DEFAULT_NETWORK_IP = "192.168.240.1";
+    public final static int DEFAULT_NETWORK_PORT = 5555;
+
+    /*
      ******************************************* CONSTANTS - Motor rules *****************************************
      */
 
