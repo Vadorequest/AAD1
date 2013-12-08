@@ -8,6 +8,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".CarActivity" >
 
+    
+	<com.iha.wcc.MjpegView
+		android:id="@+id/mv"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" />    
+
+    
     <!-- Load a default image. -->
     <ImageView
         android:id="@+id/cameraContent"
@@ -17,8 +24,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:contentDescription="@string/photoDescription"
-        android:src="@drawable/ic_launcher" />
+        android:contentDescription="@string/photoDescription" />
+        <!-- android:src="@drawable/ic_launcher" -->
 
     <ImageButton
         android:id="@+id/pictureBtn"

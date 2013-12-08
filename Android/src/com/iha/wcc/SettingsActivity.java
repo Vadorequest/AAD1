@@ -25,7 +25,18 @@ public class SettingsActivity extends PreferenceActivity {
 		
 		super.onStop();
 	}
-
 	*/
+	
+	//This kind of fixes the problem of the video not continuing after going back
+	//But it would send the view to the MainActivity not to CarActivity
+		/*
+		@Override
+		public void onBackPressed() { 
+		    
+		    Intent intentSettings = new Intent(this, MainActivity.class);
+	        startActivity(intentSettings);
+	        finish();
+		}
+		*/	
 
 } 
