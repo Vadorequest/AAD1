@@ -38,8 +38,8 @@ import android.widget.Toast;
 import com.iha.wcc.job.car.Car;
 
 public class CarActivity extends FragmentActivity {
-	  
-        /**
+
+	/**
          * Static instance of itself.
          */
         public static Context context;
@@ -81,17 +81,17 @@ public class CarActivity extends FragmentActivity {
 */
     private static Thread socketThread = null;
 
+/**
+* For the video player	
+*/
+   	private static final String TAG = "MjpegActivity";
+   	private MjpegView mv;     
+    
     /**
 * Runnable running in another thread, responsible to the communication with the car.
 */
-    
-    /**
-* For the video player	
-*/
-	private static final String TAG = "MjpegActivity";
-	private MjpegView mv;    
-    
     private final Runnable networkRunnable = new Runnable() {
+
 
            
             
@@ -189,7 +189,7 @@ public class CarActivity extends FragmentActivity {
                                            new ViewGroup.LayoutParams(
                                            ViewGroup.LayoutParams.FILL_PARENT,
                                            ViewGroup.LayoutParams.FILL_PARENT));
-                new DoRead().execute(URL);                
+                new DoRead().execute(URL);                    
                 
                 
                 // Define a static context. Useful for the anonymous events.
@@ -209,7 +209,7 @@ public class CarActivity extends FragmentActivity {
             // Use the pre-defined constant as default but try to get custom config if exists to configure the arduino to reach.
             extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
             extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
-        );
+        );        
         }
 
     @Override
@@ -219,17 +219,16 @@ public class CarActivity extends FragmentActivity {
             socketThread = new Thread(networkRunnable);
             socketThread.start();
         }
-
         // Load or reload the car settings. TODO Reload only if they was changed, not every time.
         this.initializeCarSettings();
 
         super.onStart();
     }
-    
+       
     @Override
     public void onPause() {
         super.onPause();
-        mv.stopPlayback(); //Necessary for the video
+        mv.stopPlayback();	//Necessary for the video
     }
     
     @Override
@@ -240,7 +239,7 @@ public class CarActivity extends FragmentActivity {
         if(socketThread != null) socketThread.interrupt();
         super.onStop();
     }
-
+     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -443,9 +442,6 @@ public class CarActivity extends FragmentActivity {
         this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)));// TODO: More settings.
     }
         
-    
-    
-    
         /**
          * Send a request to the car to go forward.
          */
@@ -567,7 +563,6 @@ public class CarActivity extends FragmentActivity {
         Log.d(TAG_DEBUG, message);
     }
     
-    //Necessary for the video to work
     public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         protected MjpegInputStream doInBackground(String... url) {
             //TODO: if camera has authentication deal with it and don't just not work
@@ -600,7 +595,7 @@ public class CarActivity extends FragmentActivity {
             mv.setDisplayMode(MjpegView.SIZE_BEST_FIT);
             mv.showFps(true);
         }
-    }    
+    }
     
     
 }
