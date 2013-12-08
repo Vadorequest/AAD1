@@ -39,62 +39,62 @@ import com.iha.wcc.job.car.Car;
 
 public class CarActivity extends FragmentActivity {
 
-	/**
-         * Static instance of itself.
-         */
-        public static Context context;
+    /**
+     * Static instance of itself.
+     */
+    public static Context context;
 
     /**
-* Tag used to debug.
-*/
+     * Tag used to debug.
+     */
     private final static String TAG_DEBUG = ">==< ArduinoYun >==<";
 
     /**
-* Information about the arduino to reach.
-* Use default values from the Car class if they are not provided.
-*/
+     * Information about the arduino to reach.
+     * Use default values from the Car class if they are not provided.
+     */
     private static String serverIpAddress;
     private static int serverPort;
 
     /**
-* Array of strings that contains all messages to send to the server using sockets.
-*/
+     * Array of strings that contains all messages to send to the server using sockets.
+     */
     private ArrayBlockingQueue<String> queriesQueueSocket = new ArrayBlockingQueue<String>(255);
 
     /**
-* Atomic boolean shared and accessible between different threads, used to be sure the connection is available.
-*/
+     * Atomic boolean shared and accessible between different threads, used to be sure the connection is available.
+     */
     private AtomicBoolean stopProcessingSocket = new AtomicBoolean(false);
 
     /**
-* Contains the values to write in the socket stream.
-*/
+     * Contains the values to write in the socket stream.
+     */
     private OutputStream outputStreamSocket = null;
 
     /**
-* Socket connected to the Arduino.
-*/
+     * Socket connected to the Arduino.
+     */
     private Socket socket = null;
 
     /**
-* Thread which manage socket streams.
-*/
+     * Thread which manage socket streams.
+     */
     private static Thread socketThread = null;
 
-/**
-* For the video player	
-*/
-   	private static final String TAG = "MjpegActivity";
-   	private MjpegView mv;     
-    
     /**
-* Runnable running in another thread, responsible to the communication with the car.
-*/
+     * For the video player
+     */
+    private static final String TAG = "MjpegActivity";
+    private MjpegView mv;
+
+    /**
+     * Runnable running in another thread, responsible to the communication with the car.
+     */
     private final Runnable networkRunnable = new Runnable() {
 
 
-           
-            
+
+
         @Override
         public void run() {
             log("starting network thread");
@@ -151,66 +151,66 @@ public class CarActivity extends FragmentActivity {
             socketThread = null;
         }
     };
-        
-        // View components.
-        private ImageView cameraContent;// The entire screen which displays the video stream or the last photo from the car.
-        private ImageButton pictureBtn;// Take a picture.
-        private ImageButton honkBtn;// Play a sound.
-        private ImageButton settingsBtn;// Go to settings.
-        private ImageButton goForwardBtn;
-        private ImageButton goBackwardBtn;
-        private ImageButton goLeftBtn;
-        private ImageButton goRightBtn;
-        private ImageButton doStopBtn;
-        private TextView speedText;// Displays the current speed.
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
-                //Previous code
-                //setContentView(R.layout.activity_car);                
-                
-                //Loading first the video Custom View and after that adding the normal view
-                
-                //External video
-                String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
-                //Arduino feed
-                //String URL = "http://arduino.local:8080/?action=stream";
+    // View components.
+    private ImageView cameraContent;// The entire screen which displays the video stream or the last photo from the car.
+    private ImageButton pictureBtn;// Take a picture.
+    private ImageButton honkBtn;// Play a sound.
+    private ImageButton settingsBtn;// Go to settings.
+    private ImageButton goForwardBtn;
+    private ImageButton goBackwardBtn;
+    private ImageButton goLeftBtn;
+    private ImageButton goRightBtn;
+    private ImageButton doStopBtn;
+    private TextView speedText;// Displays the current speed.
 
-                requestWindowFeature(Window.FEATURE_NO_TITLE);
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //Previous code
+        //setContentView(R.layout.activity_car);
+
+        //Loading first the video Custom View and after that adding the normal view
+
+        //External video
+        String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
+        //Arduino feed
+        //String URL = "http://arduino.local:8080/?action=stream";
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-                mv = new MjpegView(this);
-                setContentView(mv);
-                
-                LayoutInflater inflater = getLayoutInflater();
-                getWindow().addContentView(inflater.inflate(R.layout.activity_car, null),
-                                           new ViewGroup.LayoutParams(
-                                           ViewGroup.LayoutParams.FILL_PARENT,
-                                           ViewGroup.LayoutParams.FILL_PARENT));
-                new DoRead().execute(URL);                    
-                
-                
-                // Define a static context. Useful for the anonymous events.
-                context = getApplicationContext();
-                
-                // Initialize view components.
-                this.initializeComponents();
-                
-                // Bind listeners once all components are initialized.
-                this.initializeListeners();
-                
-                // Initialize the car and the application.
-                Bundle extras = getIntent().getExtras();
+        mv = new MjpegView(this);
+        setContentView(mv);
+
+        LayoutInflater inflater = getLayoutInflater();
+        getWindow().addContentView(inflater.inflate(R.layout.activity_car, null),
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.FILL_PARENT,
+                        ViewGroup.LayoutParams.FILL_PARENT));
+        new DoRead().execute(URL);
+
+
+        // Define a static context. Useful for the anonymous events.
+        context = getApplicationContext();
+
+        // Initialize view components.
+        this.initializeComponents();
+
+        // Bind listeners once all components are initialized.
+        this.initializeListeners();
+
+        // Initialize the car and the application.
+        Bundle extras = getIntent().getExtras();
 
         // Initialize car network to reach. Settings will be updated when on the onStart() method.
         this.initializeCar(
-            // Use the pre-defined constant as default but try to get custom config if exists to configure the arduino to reach.
-            extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
-            extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
-        );        
-        }
+                // Use the pre-defined constant as default but try to get custom config if exists to configure the arduino to reach.
+                extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
+                extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
+        );
+    }
 
     @Override
     protected void onStart() {
@@ -224,13 +224,13 @@ public class CarActivity extends FragmentActivity {
 
         super.onStart();
     }
-       
+
     @Override
     public void onPause() {
         super.onPause();
         mv.stopPlayback();	//Necessary for the video
     }
-    
+
     @Override
     protected void onStop() {
         stopProcessingSocket.set(true);
@@ -239,7 +239,7 @@ public class CarActivity extends FragmentActivity {
         if(socketThread != null) socketThread.interrupt();
         super.onStop();
     }
-     
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -247,29 +247,29 @@ public class CarActivity extends FragmentActivity {
         return true;
     }
 
-        /**
-         * Initialize all view components.
-         */
-        private void initializeComponents() {
-                this.cameraContent = (ImageView) findViewById(R.id.cameraContent);
-                this.pictureBtn = (ImageButton) findViewById(R.id.pictureBtn);
-                this.honkBtn = (ImageButton) findViewById(R.id.honkBtn);
-                this.settingsBtn = (ImageButton) findViewById(R.id.settingsBtn);
-                this.goForwardBtn = (ImageButton) findViewById(R.id.goForwardBtn);
-                this.goBackwardBtn = (ImageButton) findViewById(R.id.goBackwardBtn);
-                this.goLeftBtn = (ImageButton) findViewById(R.id.goLeftBtn);
-                this.goRightBtn = (ImageButton) findViewById(R.id.goRightBtn);
-                this.doStopBtn = (ImageButton) findViewById(R.id.doStopBtn);
-                this.speedText = (TextView) findViewById(R.id.speedText);
-        }
-        
-        /**
-         * Bind all button listeners. (called during the initialization)
-         */
-        private void initializeListeners(){
+    /**
+     * Initialize all view components.
+     */
+    private void initializeComponents() {
+        this.cameraContent = (ImageView) findViewById(R.id.cameraContent);
+        this.pictureBtn = (ImageButton) findViewById(R.id.pictureBtn);
+        this.honkBtn = (ImageButton) findViewById(R.id.honkBtn);
+        this.settingsBtn = (ImageButton) findViewById(R.id.settingsBtn);
+        this.goForwardBtn = (ImageButton) findViewById(R.id.goForwardBtn);
+        this.goBackwardBtn = (ImageButton) findViewById(R.id.goBackwardBtn);
+        this.goLeftBtn = (ImageButton) findViewById(R.id.goLeftBtn);
+        this.goRightBtn = (ImageButton) findViewById(R.id.goRightBtn);
+        this.doStopBtn = (ImageButton) findViewById(R.id.doStopBtn);
+        this.speedText = (TextView) findViewById(R.id.speedText);
+    }
+
+    /**
+     * Bind all button listeners. (called during the initialization)
+     */
+    private void initializeListeners(){
         /*
-******** Forward **********
-*/
+        ******** Forward **********
+        */
         this.goForwardBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -294,8 +294,8 @@ public class CarActivity extends FragmentActivity {
         });
 
         /*
-******** Backward **********
-*/
+        ******** Backward **********
+        */
         this.goBackwardBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -319,9 +319,9 @@ public class CarActivity extends FragmentActivity {
             }
         });
 
-                /*
-******** Left **********
-*/
+        /*
+        ******** Left **********
+        */
         this.goLeftBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -335,9 +335,9 @@ public class CarActivity extends FragmentActivity {
             }
         });
 
-                /*
-******** Right **********
-*/
+        /*
+        ******** Right **********
+        */
         this.goRightBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -351,8 +351,8 @@ public class CarActivity extends FragmentActivity {
         });
 
         /*
-******** Stop **********
-*/
+        ******** Stop **********
+        */
         this.doStopBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -361,8 +361,8 @@ public class CarActivity extends FragmentActivity {
         });
 
         /*
-******** Picture **********
-*/
+        ******** Picture **********
+        */
         this.pictureBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -371,8 +371,8 @@ public class CarActivity extends FragmentActivity {
         });
 
         /*
-******** Honk **********
-*/
+        ******** Honk **********
+        */
         this.honkBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -393,33 +393,33 @@ public class CarActivity extends FragmentActivity {
             }
         });
 
-                /*
-******** Settings **********
-*/
-                this.settingsBtn.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                                displaySettings();
-                        }
-                });
-        }
-        
-        // The next methods communicate with the car.
-        
-        /**
-         * Initialize the car such as the arduino settings (ip/port) to reach.
-         * @param ip IP address of the car.
-         * @param port Port used to communicate with the Arduino.
-         */
-        private void initializeCar(String ip, int port){
-                // Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
-        serverIpAddress = ip;
-        serverPort = port;
-        }
+        /*
+        ******** Settings **********
+        */
+        this.settingsBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displaySettings();
+            }
+        });
+    }
+
+    // The next methods communicate with the car.
 
     /**
-* Get the car settings from the local phone settings and send them to the car.
-*/
+     * Initialize the car such as the arduino settings (ip/port) to reach.
+     * @param ip IP address of the car.
+     * @param port Port used to communicate with the Arduino.
+     */
+    private void initializeCar(String ip, int port){
+        // Initialize the CarSocket and CarHttpRequest classes with available information about the host to connect.
+        serverIpAddress = ip;
+        serverPort = port;
+    }
+
+    /**
+     * Get the car settings from the local phone settings and send them to the car.
+     */
     private void initializeCarSettings(){
         // Get settings.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -441,68 +441,68 @@ public class CarActivity extends FragmentActivity {
         // Update arduino Car device settings.
         this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)));// TODO: More settings.
     }
-        
-        /**
-         * Send a request to the car to go forward.
-         */
-        private void goForward(){
-        send(Car.calculateSpeed(Car.Direction.FORWARD));
-        }
-        
-        /**
-         * Send a request to the car to go backward.
-         */
-        private void goBackward(){
-        send(Car.calculateSpeed(Car.Direction.BACKWARD));
-        }
-        
-        /**
-         * Send a request to the car to go to the left.
-         */
-        private void goLeft(){
-        send(Car.calculateSpeed(Car.Direction.LEFT), Car.getSpeedTurnMotor()+"");// 100 for the force motor rear wheels. TODO use setting value.
-        }
 
     /**
-* Send a request to the car to go to the right.
-*/
+     * Send a request to the car to go forward.
+     */
+    private void goForward(){
+        send(Car.calculateSpeed(Car.Direction.FORWARD));
+    }
+
+    /**
+     * Send a request to the car to go backward.
+     */
+    private void goBackward(){
+        send(Car.calculateSpeed(Car.Direction.BACKWARD));
+    }
+
+    /**
+     * Send a request to the car to go to the left.
+     */
+    private void goLeft(){
+        send(Car.calculateSpeed(Car.Direction.LEFT), Car.getSpeedTurnMotor()+"");// 100 for the force motor rear wheels. TODO use setting value.
+    }
+
+    /**
+     * Send a request to the car to go to the right.
+     */
     private void goRight(){
         send(Car.calculateSpeed(Car.Direction.RIGHT), Car.getSpeedTurnMotor()+"");// 100 for the force motor rear wheels.
     }
 
     /**
-* Send a request to the car to stop turn.
-*/
+     * Send a request to the car to stop turn.
+     */
     private void stopTurn(){
         send("stopTurn");
     }
 
-        /**
-         * Send a request to the car to go to the right.
-         */
-        private void doStop(){
+    /**
+     * Send a request to the car to go to the right.
+     */
+    private void doStop(){
         send(Car.calculateSpeed(Car.Direction.STOP));
-        }
-        
-        /**
-         * Send a request to the car to take a photo to store on the SD card.
-         */
-        private void doPhoto(){
+    }
+
+    /**
+     * Send a request to the car to take a photo to store on the SD card.
+     */
+    private void doPhoto(){
         send("photo");
-        }
-        
-        /**
-         * Send a request to the car to generate a a sound from the car (honk).
-         */
-        private void doHonk(){
+    }
+
+    /**
+     * Send a request to the car to generate a a sound from the car (honk).
+     */
+    private void doHonk(){
         send("honk");
-        }
-        
-        /**
-         * Display settings.
-         * TODO We don't know yet how it will works, another page? Could be better to have all the stuff on the same page but could be difficult... [Alvarro]
-         */
-        private void displaySettings(){
+    }
+
+    /**
+     * Display settings.
+     * TODO We don't know yet how it will works, another page? Could be better to have all the stuff on the same page but could be difficult... [Alvarro]
+     */
+    private void displaySettings(){
         // Stop the car before kill somebody.
         this.doStop();
 
@@ -511,22 +511,22 @@ public class CarActivity extends FragmentActivity {
         Intent intentSettings = new Intent(this, SettingsActivity.class);
         //Intent intentSettings = new Intent(this, MjpegActivity.class);
         startActivity(intentSettings);
-        }
+    }
 
     /**
-* Send a message using the socket connection to the Arduino.
-* @param action Action to execute.
-*/
+     * Send a message using the socket connection to the Arduino.
+     * @param action Action to execute.
+     */
     private void send(String action){
         this.send(action, String.valueOf(Car.speed));
     }
 
     /**
-* Send a message using the socket connection to the Arduino.
-* Send params instead of the speed.
-* @param action Action to execute.
-* @param params Params to the action.
-*/
+     * Send a message using the socket connection to the Arduino.
+     * Send params instead of the speed.
+     * @param action Action to execute.
+     * @param params Params to the action.
+     */
     private void send(String action, String params){
         // Send the message in the socket pool.
         queriesQueueSocket.offer(action + "/" + params);
@@ -539,35 +539,35 @@ public class CarActivity extends FragmentActivity {
     }
 
     /**
-* Update the direction displayed on the view.
-* @param direction The new direction of the car.
-* @TODO Use an image or something more beautiful.
-*/
+     * Update the direction displayed on the view.
+     * @param direction The new direction of the car.
+     * @TODO Use an image or something more beautiful.
+     */
     private void updateViewDirection(Car.Direction direction) {
         speedText.setText((direction == Car.Direction.FORWARD ? "+" : (direction == Car.Direction.BACKWARD ? "-" : speedText.getText().charAt(0) + "")) + speedText.getText().toString());
     }
 
     /**
-* Update the displayed speed in the view.
-* @param speed The new speed used by the car.
-*/
+     * Update the displayed speed in the view.
+     * @param speed The new speed used by the car.
+     */
     private void updateViewSpeed(int speed) {
         speedText.setText(speed + " Km/h");
     }
 
     /**
-* Debug log.
-* @param message Message to display.
-*/
+     * Debug log.
+     * @param message Message to display.
+     */
     private void log(String message){
         Log.d(TAG_DEBUG, message);
     }
-    
+
     public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         protected MjpegInputStream doInBackground(String... url) {
             //TODO: if camera has authentication deal with it and don't just not work
             HttpResponse res = null;
-            DefaultHttpClient httpclient = new DefaultHttpClient();     
+            DefaultHttpClient httpclient = new DefaultHttpClient();
             Log.d(TAG, "1. Sending http request");
             try {
                 res = httpclient.execute(new HttpGet(URI.create(url[0])));
@@ -576,7 +576,7 @@ public class CarActivity extends FragmentActivity {
                     //You must turn off camera User Access Control before this will work
                     return null;
                 }
-                return new MjpegInputStream(res.getEntity().getContent());  
+                return new MjpegInputStream(res.getEntity().getContent());
             } catch (ClientProtocolException e) {
                 e.printStackTrace();
                 Log.d(TAG, "Request failed-ClientProtocolException", e);
@@ -596,6 +596,6 @@ public class CarActivity extends FragmentActivity {
             mv.showFps(true);
         }
     }
-    
-    
+
+
 }

@@ -117,7 +117,7 @@ public class Car {
      */
 
     /**
-     * Speed of the car.
+     * Current speed of the car.
      */
     public static int speed = minSpeedForward;
 
@@ -143,7 +143,7 @@ public class Car {
     };
 
     /**
-     * Will update the direction automatically once the speed will be calculated.
+     * Will be used to update the direction automatically once the speed will be calculated.
      * DEFAULT VALUE MUST BE TRUE, for each call to calculateSpeed().
      */
     private static boolean autoUpdateDirection = true;
