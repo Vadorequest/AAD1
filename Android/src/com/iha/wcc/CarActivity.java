@@ -387,7 +387,7 @@ public class CarActivity extends FragmentActivity {
         this.pictureBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-            	new ImageDownloader().execute(takeSpanshot);
+                doPhoto();
             }
         });
 
@@ -503,6 +503,13 @@ public class CarActivity extends FragmentActivity {
      */
     private void doStop(){
         send(Car.calculateSpeed(Car.Direction.STOP));
+    }
+
+    /**
+     * Send a request to the car to take a photo to store on the SD card.
+     */
+    private void doPhoto(){
+        new ImageDownloader().execute(takeSpanshot);
     }
 
     /**
