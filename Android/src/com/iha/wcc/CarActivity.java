@@ -631,6 +631,7 @@ public class CarActivity extends FragmentActivity {
         	SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         	Date now = new Date();
         	storeImage(result, "/" + formatter.format(now) + ".jpg");
+        	Toast.makeText(getApplicationContext(), "Photo Stored", Toast.LENGTH_SHORT).show();
         }
  
         private Bitmap downloadBitmap(String url) {
