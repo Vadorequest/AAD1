@@ -1,15 +1,24 @@
 package com.iha.wcc;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -17,8 +26,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -86,7 +99,15 @@ public class CarActivity extends FragmentActivity {
      */
     private static final String TAG = "MjpegActivity";
     private MjpegView mv;
-
+    private String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
+    //private String URL = "http://192.168.240.1:8080/?action=stream";
+    
+    /**
+     * Path for the picture
+     */
+    //private String takeSpanshot = "http://192.168.240.1:8080/?action=snapshot";
+    private String takeSpanshot = "http://sergi1985.files.wordpress.com/2012/03/futurama-fry-meme-generator-why-but-whyy-aac252.jpg";
+    
     /**
      * Runnable running in another thread, responsible to the communication with the car.
      */
@@ -173,9 +194,9 @@ public class CarActivity extends FragmentActivity {
         //Loading first the video Custom View and after that adding the normal view
 
         //External video
-        String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
+        //String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
         //Arduino feed
-        //String URL = "http://arduino.local:8080/?action=stream";
+        //String URL = "http://192.168.240.1:8080/?action=stream";
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -366,7 +387,7 @@ public class CarActivity extends FragmentActivity {
         this.pictureBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                doPhoto();
+            	new ImageDownloader().execute(takeSpanshot);
             }
         });
 
@@ -485,13 +506,6 @@ public class CarActivity extends FragmentActivity {
     }
 
     /**
-     * Send a request to the car to take a photo to store on the SD card.
-     */
-    private void doPhoto(){
-        send("photo");
-    }
-
-    /**
      * Send a request to the car to generate a a sound from the car (honk).
      */
     private void doHonk(){
@@ -562,7 +576,11 @@ public class CarActivity extends FragmentActivity {
     private void log(String message){
         Log.d(TAG_DEBUG, message);
     }
-
+    /**
+     * 
+     * Video logic
+     *
+     */
     public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         protected MjpegInputStream doInBackground(String... url) {
             //TODO: if camera has authentication deal with it and don't just not work
@@ -596,6 +614,99 @@ public class CarActivity extends FragmentActivity {
             mv.showFps(true);
         }
     }
+    
+    /**
+     * Image logic
+     */
+    
+    private class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
+    	 
+        @Override
+        protected Bitmap doInBackground(String... param) {
+            return downloadBitmap(param[0]);
+        }
 
+        @Override
+        protected void onPostExecute(Bitmap result) {
+        	SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        	Date now = new Date();
+        	storeImage(result, "/" + formatter.format(now) + ".jpg");
+        }
+ 
+        private Bitmap downloadBitmap(String url) {
+            // initialize the default HTTP client object
+            final DefaultHttpClient client = new DefaultHttpClient();
+ 
+            //forming a HttpGet request
+            final HttpGet getRequest = new HttpGet(url);
+            try {
+ 
+                HttpResponse response = client.execute(getRequest);
+ 
+                //check 200 OK for success
+                final int statusCode = response.getStatusLine().getStatusCode();
+ 
+                if (statusCode != HttpStatus.SC_OK) {
+                    Log.w("ImageDownloader", "Error " + statusCode +
+                            " while retrieving bitmap from " + url);
+                    return null;
+                }
+ 
+                final HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    InputStream inputStream = null;
+                    try {
+                        // getting contents from the stream
+                        inputStream = entity.getContent();
+ 
+                        // decoding stream data back into image Bitmap that android understands
+                        final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+ 
+                        return bitmap;
+                    } finally {
+                        if (inputStream != null) {
+                            inputStream.close();
+                        }
+                        entity.consumeContent();
+                    }
+                }
+            } catch (Exception e) {
+                getRequest.abort();
+                Log.e("ImageDownloader", "Something went wrong while" +
+                        " retrieving bitmap from " + url + e.toString());
+            }
+            return null;
+        }
+    }
+    
+    private boolean storeImage(Bitmap imageData, String filename) {
+
+    	String iconsStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/WIFICar";
+    	File sdIconStorageDir = new File(iconsStoragePath);
+
+    	//Create storage directories, if nonexistent
+    	sdIconStorageDir.mkdirs();
+
+    	try {
+    		String filePath = sdIconStorageDir.toString() + filename;
+    		FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+
+    		BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+
+    		imageData.compress(CompressFormat.JPEG, 100, bos);
+
+    		bos.flush();
+    		bos.close();
+
+    	} catch (FileNotFoundException e) {
+    		Log.w("TAG", "Error saving image file: " + e.getMessage());
+    		return false;
+    	} catch (IOException e) {
+    		Log.w("TAG", "Error saving image file: " + e.getMessage());
+    		return false;
+    	}
+
+    	return true;
+    }
 
 }
