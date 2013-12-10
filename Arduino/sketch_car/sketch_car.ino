@@ -23,7 +23,7 @@ YunServer server(5555);
 // Internal settings - Can be changed dynamically from an external application using the "settings" action. 
 const char _settingHonkPin = 8;// Cannot be changed by external application.
 int settingHonkNote = 440;
-int settingHonkDuration = 250;
+int settingHonkDuration = 250;// Won't be changed from external application actually. 
 
 /**
 * Entry point of the program.
@@ -74,6 +74,9 @@ void loop() {
       // Process request
       process(client);
     }
+    // Stop the car for security reasons.
+    doStop(client);
+    
     // Close connection and free resources.
     client.stop();
   }
@@ -128,10 +131,7 @@ void process(YunClient client) {
       rearWheels->run(FORWARD);
     }
     else if(command == "stop"){
-      client.print(F("stop"));
-      Serial.println("stop"); 
-      rearWheels->run(RELEASE);
-      frontWheels->run(RELEASE);
+      doStop(client);
     }
     else if(command == "stopTurn"){
       client.print(F("stopTurn"));
@@ -156,4 +156,11 @@ void process(YunClient client) {
       settingHonkNote = client.parseInt();// Get the third element of the command.
     }
   }
+}
+
+void doStop(YunClient client){
+      client.print(F("stop"));
+      Serial.println("stop"); 
+      rearWheels->run(RELEASE);
+      frontWheels->run(RELEASE);
 }

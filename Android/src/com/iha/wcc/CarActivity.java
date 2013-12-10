@@ -99,14 +99,14 @@ public class CarActivity extends FragmentActivity {
      */
     private static final String TAG = "MjpegActivity";
     private MjpegView mv;
-    private String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
-    //private String URL = "http://192.168.240.1:8080/?action=stream";
+    //private String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
+    private String URL = "http://192.168.240.1:8080/?action=stream";
     
     /**
      * Path for the picture
      */
-    //private String takeSpanshot = "http://192.168.240.1:8080/?action=snapshot";
-    private String takeSpanshot = "http://sergi1985.files.wordpress.com/2012/03/futurama-fry-meme-generator-why-but-whyy-aac252.jpg";
+    private String takeSpanshot = "http://192.168.240.1:8080/?action=snapshot";
+    //private String takeSpanshot = "http://sergi1985.files.wordpress.com/2012/03/futurama-fry-meme-generator-why-but-whyy-aac252.jpg";
     
     /**
      * Runnable running in another thread, responsible to the communication with the car.
@@ -206,10 +206,13 @@ public class CarActivity extends FragmentActivity {
         setContentView(mv);
 
         LayoutInflater inflater = getLayoutInflater();
-        getWindow().addContentView(inflater.inflate(R.layout.activity_car, null),
+        getWindow().addContentView(
+                inflater.inflate(R.layout.activity_car, null),
                 new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.FILL_PARENT,
-                        ViewGroup.LayoutParams.FILL_PARENT));
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                )
+        );
         new DoRead().execute(URL);
 
 
@@ -249,7 +252,9 @@ public class CarActivity extends FragmentActivity {
     @Override
     public void onPause() {
         super.onPause();
-        mv.stopPlayback();	//Necessary for the video
+        if(mv != null){
+            mv.stopPlayback();	//Necessary for the video
+        }
     }
 
     @Override
