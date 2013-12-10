@@ -24,6 +24,7 @@ import com.iha.wcc.job.network.Wifi;
  * <p />
  * <p />
  * Activities containing this fragment MUST implement the {@link Callbacks} interface.
+ * @deprecated Not used anymore but could be useful if the application was improved with the selection of the network as main page.
  */
 public class NetworkFragment extends ListFragment {
 	private Wifi wifiInfo;

@@ -2,7 +2,7 @@ package com.iha.wcc.data;
 
 /**
  * A Network item represents a Network object used in the list.
- * TODO description.
+ * @deprecated Not used anymore but could be useful if the application was improved with the selection of the network as main page.
  */
 public class Network {
 	public String name;

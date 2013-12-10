@@ -5,6 +5,10 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
 
+/**
+ * Manage Wifi to get information about the current network.
+ * @deprecated Not used anymore but could be useful if the application was improved with the selection of the network as main page.
+ */
 public class Wifi {
 	private WifiManager wifiManager;
 	private DhcpInfo dhcpInfo;

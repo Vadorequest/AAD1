@@ -184,8 +184,8 @@ public class CarActivity extends FragmentActivity {
         // Initialize car network to reach. Settings will be updated when on the onStart() method.
         this.initializeCar(
                 // Use the pre-defined constant as default but try to get custom config if exists to configure the arduino to reach.
-                extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
-                extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
+                extras != null && extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
+                extras != null && extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
         );
     }
 
