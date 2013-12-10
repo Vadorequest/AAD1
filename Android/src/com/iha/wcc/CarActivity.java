@@ -44,7 +44,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,20 +93,6 @@ public class CarActivity extends FragmentActivity {
      */
     private static Thread socketThread = null;
 
-    /**
-     * For the video player
-     */
-    private static final String TAG = "MjpegActivity";
-    private MjpegView mv;
-    //private String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
-    private String URL = "http://192.168.240.1:8080/?action=stream";
-    
-    /**
-     * Path for the picture
-     */
-    private String takeSpanshot = "http://192.168.240.1:8080/?action=snapshot";
-    //private String takeSpanshot = "http://sergi1985.files.wordpress.com/2012/03/futurama-fry-meme-generator-why-but-whyy-aac252.jpg";
-    
     /**
      * Runnable running in another thread, responsible to the communication with the car.
      */
@@ -174,7 +159,7 @@ public class CarActivity extends FragmentActivity {
     };
 
     // View components.
-    private ImageView cameraContent;// The entire screen which displays the video stream or the last photo from the car.
+    private MjpegView cameraContent;// Contains the view which contains all other components and the video stream.
     private ImageButton pictureBtn;// Take a picture.
     private ImageButton honkBtn;// Play a sound.
     private ImageButton settingsBtn;// Go to settings.
@@ -188,33 +173,15 @@ public class CarActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Previous code
-        //setContentView(R.layout.activity_car);
 
-        //Loading first the video Custom View and after that adding the normal view
-
-        //External video
-        //String URL = "http://64.122.208.241:8000/axis-cgi/mjpg/video.cgi";
-        //Arduino feed
-        //String URL = "http://192.168.240.1:8080/?action=stream";
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        mv = new MjpegView(this);
-        setContentView(mv);
-
-        LayoutInflater inflater = getLayoutInflater();
-        getWindow().addContentView(
-                inflater.inflate(R.layout.activity_car, null),
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
+        // Disable title, set full screen mode.
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
-        new DoRead().execute(URL);
 
+        this.refreshStreamingView();
 
         // Define a static context. Useful for the anonymous events.
         context = getApplicationContext();
@@ -236,6 +203,21 @@ public class CarActivity extends FragmentActivity {
         );
     }
 
+    private void refreshStreamingView() {
+        // Use a Mjpeg view instead of a "normal" view to stream the video.
+        this.setContentView(cameraContent = new MjpegView(this));
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        this.getWindow().addContentView(
+                // Use the old layout to display the controls.
+                inflater.inflate(R.layout.activity_car, null),
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                )
+        );
+    }
+
     @Override
     protected void onStart() {
         stopProcessingSocket.set(false);
@@ -246,19 +228,26 @@ public class CarActivity extends FragmentActivity {
         // Load or reload the car settings. TODO Reload only if they was changed, not every time.
         this.initializeCarSettings();
 
+        // Start to stream the video.
+        this.startStreaming();
+
         super.onStart();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(mv != null){
-            mv.stopPlayback();	//Necessary for the video
+        if(cameraContent != null){
+            cameraContent.stopPlayback();//Necessary for the video
         }
     }
 
     @Override
     protected void onStop() {
+        // Stop video stream.
+        cameraContent = null;
+
+        // Stop sockets.
         stopProcessingSocket.set(true);
         queriesQueueSocket.clear();
         queriesQueueSocket.offer("-1");
@@ -277,7 +266,6 @@ public class CarActivity extends FragmentActivity {
      * Initialize all view components.
      */
     private void initializeComponents() {
-        this.cameraContent = (ImageView) findViewById(R.id.cameraContent);
         this.pictureBtn = (ImageButton) findViewById(R.id.pictureBtn);
         this.honkBtn = (ImageButton) findViewById(R.id.honkBtn);
         this.settingsBtn = (ImageButton) findViewById(R.id.settingsBtn);
@@ -469,6 +457,22 @@ public class CarActivity extends FragmentActivity {
     }
 
     /**
+     * Start the video streaming.
+     */
+    private void startStreaming() {
+        if(this.cameraContent == null){
+            refreshStreamingView();
+
+            // Initialize view components.
+            this.initializeComponents();
+
+            // Bind listeners once all components are initialized.
+            this.initializeListeners();
+        }
+        new DoRead().execute(Car.DEFAULT_CAMERA_STREAMING_URL);
+    }
+
+    /**
      * Send a request to the car to go forward.
      */
     private void goForward(){
@@ -514,7 +518,7 @@ public class CarActivity extends FragmentActivity {
      * Send a request to the car to take a photo to store on the SD card.
      */
     private void doPhoto(){
-        new ImageDownloader().execute(takeSpanshot);
+        new ImageDownloader().execute(Car.DEFAULT_CAMERA_PICTURE_URL);
     }
 
     /**
@@ -533,9 +537,7 @@ public class CarActivity extends FragmentActivity {
         this.doStop();
 
         // Load the settings interface.
-
         Intent intentSettings = new Intent(this, SettingsActivity.class);
-        //Intent intentSettings = new Intent(this, MjpegActivity.class);
         startActivity(intentSettings);
     }
 
@@ -594,9 +596,10 @@ public class CarActivity extends FragmentActivity {
      *
      */
     public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
+        public String TAG = "DoRead";
+
         protected MjpegInputStream doInBackground(String... url) {
-            //TODO: if camera has authentication deal with it and don't just not work
-            HttpResponse res = null;
+            HttpResponse res;
             DefaultHttpClient httpclient = new DefaultHttpClient();
             Log.d(TAG, "1. Sending http request");
             try {
@@ -621,9 +624,9 @@ public class CarActivity extends FragmentActivity {
         }
 
         protected void onPostExecute(MjpegInputStream result) {
-            mv.setSource(result);
-            mv.setDisplayMode(MjpegView.SIZE_BEST_FIT);
-            mv.showFps(true);
+            cameraContent.setSource(result);
+            cameraContent.setDisplayMode(MjpegView.SIZE_BEST_FIT);
+            cameraContent.showFps(true);
         }
     }
     

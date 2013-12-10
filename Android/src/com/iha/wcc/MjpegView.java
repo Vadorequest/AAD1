@@ -29,7 +29,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     public final static int SIZE_FULLSCREEN = 8;
 
     private MjpegViewThread thread;
-    private MjpegInputStream mIn = null;    
+    private MjpegInputStream mInputStream = null;
     private boolean showFps = false;
     private boolean mRun = false;
     private boolean surfaceDone = false;    
@@ -114,7 +114,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                         c = mSurfaceHolder.lockCanvas();
                         synchronized (mSurfaceHolder) {
                             try {
-                                bm = mIn.readMjpegFrame();
+                                bm = mInputStream.readMjpegFrame();
                                 destRect = destRect(bm.getWidth(),bm.getHeight());
                                 c.drawColor(Color.BLACK);
                                 c.drawBitmap(bm, null, destRect, p);
@@ -167,8 +167,9 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void startPlayback() { 
-        if(mIn != null) {
+        if(mInputStream != null) {
             mRun = true;
+
             thread.start();         
         }
     }
@@ -214,7 +215,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void setSource(MjpegInputStream source) { 
-        mIn = source;
+        mInputStream = source;
         startPlayback();
     }
 

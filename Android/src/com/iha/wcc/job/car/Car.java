@@ -9,10 +9,24 @@ import android.util.Log;
 public class Car {
 
     /*
-     ******************************************* CONSTANTS - Linino hotspot *****************************************
+     ******************************************* CONSTANTS - Linino *****************************************
+     */
+
+    /**
+     * Linino default IP address and port for its hotspot.
      */
     public final static String DEFAULT_NETWORK_IP = "192.168.240.1";
     public final static int DEFAULT_NETWORK_PORT = 5555;
+
+    /**
+     * Linino default camera streaming address.
+     */
+    public final static String DEFAULT_CAMERA_STREAMING_URL = "http://"+DEFAULT_NETWORK_IP+":8080/?action=stream";
+
+    /**
+     * Linino default camera picture address.
+     */
+    public final static String DEFAULT_CAMERA_PICTURE_URL = "http://"+DEFAULT_NETWORK_IP+":8080/?action=snapshot";
 
     /*
      ******************************************* CONSTANTS - Car device settings *****************************************
@@ -110,7 +124,7 @@ public class Car {
     /**
      * Speed to use when you turn, will change the degree of the forwards wheels.
      */
-    private static int speedTurnMotor = 100;
+    private static int speedTurnMotor = 255;
 
     /*
      ******************************************* VARIABLES *****************************************
@@ -289,10 +303,7 @@ public class Car {
             // Re init to true for the next time. (Default TRUE)
             autoUpdateDirection = true;
         }
-        /*Log.d("Car", "-----------------");
-        Log.d("Car", "Sens:"+lastSens);
-        Log.d("Car", "Direction:"+lastDirection);
-        Log.d("Car", "Speed:"+speed);*/
+
         // Return the new speed to use.
         return _formatLastDirection();
     }
