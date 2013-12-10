@@ -11,9 +11,7 @@
     <string name="photoDescription">Last image received from the car</string>
     <string name="networkLbl">Looking for network name...</string>
     <string name="alarm_volume">Alarm Volume</string>
-    <string name="photo_frequency">Frequency of the picture capture [secs]</string>
-    <string name="photo_capture">Photo auto-capture</string>
-    <string name="photo_storage">Path for photo storage (Arduino)</string>
+    <string name="photo_storage">Path for photo storage on Android</string>
     <string name="speedAccelerationForward">Speed Acceleration Forward</string>
     <string name="speedAccelerationBackward">"Speed Acceleration Backward "</string>
     <string name="speedDecelerationForward">Speed Deceleration Forward</string>

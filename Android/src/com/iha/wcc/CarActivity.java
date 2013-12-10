@@ -689,7 +689,9 @@ public class CarActivity extends FragmentActivity {
     
     private boolean storeImage(Bitmap imageData, String filename) {
 
-    	String iconsStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/WIFICar";
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	String default_path = "/WIFICar";
+    	String iconsStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath() + prefs.getString("photo_storage", default_path);
     	File sdIconStorageDir = new File(iconsStoragePath);
 
     	//Create storage directories, if nonexistent
