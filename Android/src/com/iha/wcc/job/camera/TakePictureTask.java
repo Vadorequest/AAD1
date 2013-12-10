@@ -33,6 +33,8 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
      */
     private String FILENAME_EXT = "jpg";
 
+    private String TAG = "TakePictureTask";
+
     /**
      * Constructor with setter for the activity context to use.
      * @param context
@@ -147,11 +149,11 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
             bos.close();
 
         } catch (FileNotFoundException e) {
-            Log.w("TAG", "Error saving image file: " + e.getMessage());
+            Log.w(TAG, "Error saving image file: " + e.getMessage());
             return false;
 
         } catch (IOException e) {
-            Log.w("TAG", "Error saving image file: " + e.getMessage());
+            Log.w(TAG, "Error saving image file: " + e.getMessage());
             return false;
         }
 

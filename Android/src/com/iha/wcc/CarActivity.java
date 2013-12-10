@@ -10,6 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
+import android.widget.ImageView;
 import com.iha.wcc.job.camera.MjpegVideoStreamTask;
 import com.iha.wcc.job.camera.MjpegView;
 import com.iha.wcc.job.camera.TakePictureTask;
@@ -155,6 +156,7 @@ public class CarActivity extends FragmentActivity {
     private ImageButton goRightBtn;
     private ImageButton doStopBtn;
     private TextView speedText;// Displays the current speed.
+    private ImageView sensView;// Displays the current sens.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,6 +248,7 @@ public class CarActivity extends FragmentActivity {
         this.goRightBtn = (ImageButton) findViewById(R.id.goRightBtn);
         this.doStopBtn = (ImageButton) findViewById(R.id.doStopBtn);
         this.speedText = (TextView) findViewById(R.id.speedText);
+        this.sensView = (ImageView) findViewById(R.id.sensView);
     }
 
     /**
@@ -423,8 +426,8 @@ public class CarActivity extends FragmentActivity {
                 Integer.parseInt(prefs.getString("maxSpeedBackward", String.valueOf(Car.getMaxSpeedBackward()))),
                 Integer.parseInt(prefs.getString("speedTurnMotor", String.valueOf(Car.getSpeedTurnMotor()))));
 
-        // Update arduino Car device settings.
-        this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)));// TODO: More settings.
+        // Update arduino Car device settings without updating the view.
+        this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)), false);// TODO: Add more settings, later.
     }
 
     /**
@@ -546,23 +549,40 @@ public class CarActivity extends FragmentActivity {
      * @param params Params to the action.
      */
     private void send(String action, String params){
-        // Send the message in the socket pool.
-        queriesQueueSocket.offer(action + "/" + params);
-
-        // Update the displayed speed in the view.
-        this.updateViewSpeed(Car.speed);
-
-        // Update the direction displayed on the view.
-        this.updateViewDirection(Car.lastDirection);
+        this.send(action, params, true);
     }
 
     /**
-     * Update the direction displayed on the view.
-     * @param direction The new direction of the car.
-     * @TODO Use an image or something more beautiful.
+     * Send a message using the socket connection to the Arduino.
+     * Send params instead of the speed.
+     * Don't update the view if asked. Useful for call to method who don't need to update the view.
+     * @param action Action to execute.
+     * @param params Params to the action.
+     * @param updateView
      */
-    private void updateViewDirection(Car.Direction direction) {
-        speedText.setText((direction == Car.Direction.FORWARD ? "+" : (direction == Car.Direction.BACKWARD ? "-" : speedText.getText().charAt(0) + "")) + speedText.getText().toString());
+    private void send(String action, String params, boolean updateView){
+        // Send the message in the socket pool.
+        queriesQueueSocket.offer(action + "/" + params);
+
+        if(updateView){
+            // Update the displayed speed in the view.
+            this.updateViewSpeed(Car.speed);
+
+            // Update the direction displayed on the view.
+            this.updateViewSens(Car.lastSens);
+        }
+    }
+
+    /**
+     * Update the sens displayed on the view.
+     * @param sens The new sens of the car.
+     */
+    private void updateViewSens(Car.Direction sens) {
+        if(sens == Car.Direction.FORWARD || sens == Car.Direction.STOP){
+            this.sensView.setImageResource(R.drawable.ic_going_forward);
+        }else{
+            this.sensView.setImageResource(R.drawable.ic_going_backward);
+        }
     }
 
     /**
@@ -570,7 +590,7 @@ public class CarActivity extends FragmentActivity {
      * @param speed The new speed used by the car.
      */
     private void updateViewSpeed(int speed) {
-        speedText.setText(speed + " Km/h");
+        this.speedText.setText(speed + " Km/h");
     }
 
     /**

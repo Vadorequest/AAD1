@@ -82,12 +82,24 @@
         android:cropToPadding="true"/>
 
     <TextView
+        android:id="@+id/speedText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="0 Km/h"
-        android:id="@+id/speedText"
         android:layout_alignBottom="@+id/goBackwardBtn"
-        android:layout_toLeftOf="@+id/goBackwardBtn"/>
+        android:layout_marginRight="42dp"
+        android:layout_toLeftOf="@+id/honkBtn"
+        android:background="@drawable/fieldset_white"
+        android:text="0 Km/h"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:textColor="#8f8f8f"/>
+
+    <ImageView
+        android:id="@+id/sensView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/speedText"
+        android:layout_toLeftOf="@+id/speedText"
+        android:src="@drawable/ic_going_forward" />
 
 </RelativeLayout>
