@@ -1,18 +1,20 @@
-package com.iha.wcc;
+package com.iha.wcc.job.camera;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Properties;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+/**
+ * Manage the input stream video in a MJPEG format.
+ * Not natively supported by Android.
+ */
 public class MjpegInputStream extends DataInputStream {
     private static final String TAG = "MjpegInputStream";
 
@@ -27,7 +29,15 @@ public class MjpegInputStream extends DataInputStream {
         super(new BufferedInputStream(in, FRAME_MAX_LENGTH));
     }
 
-    private int getEndOfSeqeunce(DataInputStream in, byte[] sequence) throws IOException {
+    /**
+     *
+     * @param in
+     * @param sequence
+     * @return
+     * @throws IOException
+     * @TODO Exception here sometimes for unknown reasons, maybe a thread still alive because the app wasn't killed properly.
+     */
+    private int getEndOfSequence(DataInputStream in, byte[] sequence) throws IOException {
         int seqIndex = 0;
         byte c;
         for(int i=0; i < FRAME_MAX_LENGTH; i++) {
@@ -45,10 +55,17 @@ public class MjpegInputStream extends DataInputStream {
     }
 
     private int getStartOfSequence(DataInputStream in, byte[] sequence) throws IOException {
-        int end = getEndOfSeqeunce(in, sequence);
+        int end = getEndOfSequence(in, sequence);
         return (end < 0) ? (-1) : (end - sequence.length);
     }
 
+    /**
+     * Get the content length from the input stream.
+     * @param headerBytes
+     * @return int
+     * @throws IOException
+     * @throws NumberFormatException
+     */
     private int parseContentLength(byte[] headerBytes) throws IOException, NumberFormatException {
         ByteArrayInputStream headerIn = new ByteArrayInputStream(headerBytes);
         Properties props = new Properties();
@@ -67,7 +84,7 @@ public class MjpegInputStream extends DataInputStream {
         } catch (NumberFormatException nfe) { 
             nfe.getStackTrace();
             Log.d(TAG, "catch NumberFormatException hit", nfe);
-            mContentLength = getEndOfSeqeunce(this, EOF_MARKER); 
+            mContentLength = getEndOfSequence(this, EOF_MARKER);
         }
         reset();
         byte[] frameData = new byte[mContentLength];

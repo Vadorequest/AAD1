@@ -1,37 +1,23 @@
 package com.iha.wcc;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
-import java.net.URI;
+
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+
+import com.iha.wcc.job.camera.MjpegVideoStreamTask;
+import com.iha.wcc.job.camera.MjpegView;
+import com.iha.wcc.job.camera.TakePictureTask;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -203,21 +189,6 @@ public class CarActivity extends FragmentActivity {
         );
     }
 
-    private void refreshStreamingView() {
-        // Use a Mjpeg view instead of a "normal" view to stream the video.
-        this.setContentView(cameraContent = new MjpegView(this));
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        this.getWindow().addContentView(
-                // Use the old layout to display the controls.
-                inflater.inflate(R.layout.activity_car, null),
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
-        );
-    }
-
     @Override
     protected void onStart() {
         stopProcessingSocket.set(false);
@@ -244,7 +215,7 @@ public class CarActivity extends FragmentActivity {
 
     @Override
     protected void onStop() {
-        // Stop video stream.
+        // Next time the view will be called it will automatically refresh all the components.
         cameraContent = null;
 
         // Stop sockets.
@@ -458,6 +429,7 @@ public class CarActivity extends FragmentActivity {
 
     /**
      * Start the video streaming.
+     * If the cameraContent is null (typically the Activity was closed before) then all the view will be refreshed.
      */
     private void startStreaming() {
         if(this.cameraContent == null){
@@ -469,7 +441,25 @@ public class CarActivity extends FragmentActivity {
             // Bind listeners once all components are initialized.
             this.initializeListeners();
         }
-        new DoRead().execute(Car.DEFAULT_CAMERA_STREAMING_URL);
+        new MjpegVideoStreamTask(this.cameraContent).execute(Car.DEFAULT_CAMERA_STREAMING_URL);
+    }
+
+    /**
+     * Refresh the entire view with the special Mjpeg view to stream the video.
+     */
+    private void refreshStreamingView() {
+        // Use a Mjpeg view instead of a "normal" view to stream the video.
+        this.setContentView(cameraContent = new MjpegView(this));
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        this.getWindow().addContentView(
+                // Use the old layout to display the controls.
+                inflater.inflate(R.layout.activity_car, null),
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                )
+        );
     }
 
     /**
@@ -490,14 +480,14 @@ public class CarActivity extends FragmentActivity {
      * Send a request to the car to go to the left.
      */
     private void goLeft(){
-        send(Car.calculateSpeed(Car.Direction.LEFT), Car.getSpeedTurnMotor()+"");// 100 for the force motor rear wheels. TODO use setting value.
+        send(Car.calculateSpeed(Car.Direction.LEFT), Car.getSpeedTurnMotor()+"");
     }
 
     /**
      * Send a request to the car to go to the right.
      */
     private void goRight(){
-        send(Car.calculateSpeed(Car.Direction.RIGHT), Car.getSpeedTurnMotor()+"");// 100 for the force motor rear wheels.
+        send(Car.calculateSpeed(Car.Direction.RIGHT), Car.getSpeedTurnMotor()+"");
     }
 
     /**
@@ -518,7 +508,7 @@ public class CarActivity extends FragmentActivity {
      * Send a request to the car to take a photo to store on the SD card.
      */
     private void doPhoto(){
-        new ImageDownloader().execute(Car.DEFAULT_CAMERA_PICTURE_URL);
+        new TakePictureTask(context).execute(Car.DEFAULT_CAMERA_PICTURE_URL);
     }
 
     /**
@@ -529,8 +519,8 @@ public class CarActivity extends FragmentActivity {
     }
 
     /**
-     * Display settings.
-     * TODO We don't know yet how it will works, another page? Could be better to have all the stuff on the same page but could be difficult... [Alvarro]
+     * Display settings activity.
+     * Stop the car to avoid accident.
      */
     private void displaySettings(){
         // Stop the car before kill somebody.
@@ -590,141 +580,4 @@ public class CarActivity extends FragmentActivity {
     private void log(String message){
         Log.d(TAG_DEBUG, message);
     }
-    /**
-     * 
-     * Video logic
-     *
-     */
-    public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
-        public String TAG = "DoRead";
-
-        protected MjpegInputStream doInBackground(String... url) {
-            HttpResponse res;
-            DefaultHttpClient httpclient = new DefaultHttpClient();
-            Log.d(TAG, "1. Sending http request");
-            try {
-                res = httpclient.execute(new HttpGet(URI.create(url[0])));
-                Log.d(TAG, "2. Request finished, status = " + res.getStatusLine().getStatusCode());
-                if(res.getStatusLine().getStatusCode()==401){
-                    //You must turn off camera User Access Control before this will work
-                    return null;
-                }
-                return new MjpegInputStream(res.getEntity().getContent());
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-                Log.d(TAG, "Request failed-ClientProtocolException", e);
-                //Error connecting to camera
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.d(TAG, "Request failed-IOException", e);
-                //Error connecting to camera
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(MjpegInputStream result) {
-            cameraContent.setSource(result);
-            cameraContent.setDisplayMode(MjpegView.SIZE_BEST_FIT);
-            cameraContent.showFps(true);
-        }
-    }
-    
-    /**
-     * Image logic
-     */
-    
-    private class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
-    	 
-        @Override
-        protected Bitmap doInBackground(String... param) {
-            return downloadBitmap(param[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-        	SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-        	Date now = new Date();
-        	storeImage(result, "/" + formatter.format(now) + ".jpg");
-        	Toast.makeText(getApplicationContext(), "Photo Stored", Toast.LENGTH_SHORT).show();
-        }
- 
-        private Bitmap downloadBitmap(String url) {
-            // initialize the default HTTP client object
-            final DefaultHttpClient client = new DefaultHttpClient();
- 
-            //forming a HttpGet request
-            final HttpGet getRequest = new HttpGet(url);
-            try {
- 
-                HttpResponse response = client.execute(getRequest);
- 
-                //check 200 OK for success
-                final int statusCode = response.getStatusLine().getStatusCode();
- 
-                if (statusCode != HttpStatus.SC_OK) {
-                    Log.w("ImageDownloader", "Error " + statusCode +
-                            " while retrieving bitmap from " + url);
-                    return null;
-                }
- 
-                final HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    InputStream inputStream = null;
-                    try {
-                        // getting contents from the stream
-                        inputStream = entity.getContent();
- 
-                        // decoding stream data back into image Bitmap that android understands
-                        final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
- 
-                        return bitmap;
-                    } finally {
-                        if (inputStream != null) {
-                            inputStream.close();
-                        }
-                        entity.consumeContent();
-                    }
-                }
-            } catch (Exception e) {
-                getRequest.abort();
-                Log.e("ImageDownloader", "Something went wrong while" +
-                        " retrieving bitmap from " + url + e.toString());
-            }
-            return null;
-        }
-    }
-    
-    private boolean storeImage(Bitmap imageData, String filename) {
-
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	String default_path = "/WIFICar";
-    	String iconsStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath() + prefs.getString("photo_storage", default_path);
-    	File sdIconStorageDir = new File(iconsStoragePath);
-
-    	//Create storage directories, if nonexistent
-    	sdIconStorageDir.mkdirs();
-
-    	try {
-    		String filePath = sdIconStorageDir.toString() + filename;
-    		FileOutputStream fileOutputStream = new FileOutputStream(filePath);
-
-    		BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
-
-    		imageData.compress(CompressFormat.JPEG, 100, bos);
-
-    		bos.flush();
-    		bos.close();
-
-    	} catch (FileNotFoundException e) {
-    		Log.w("TAG", "Error saving image file: " + e.getMessage());
-    		return false;
-    	} catch (IOException e) {
-    		Log.w("TAG", "Error saving image file: " + e.getMessage());
-    		return false;
-    	}
-
-    	return true;
-    }
-
 }

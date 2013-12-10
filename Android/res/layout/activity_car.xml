@@ -8,25 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".CarActivity" >
 
-    
-	<com.iha.wcc.MjpegView
-		android:id="@+id/mv"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" />    
-
-    
-    <!-- Load a default image. -->
-    <ImageView
-        android:id="@+id/cameraContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:contentDescription="@string/photoDescription" />
-        <!-- android:src="@drawable/ic_launcher" -->
-
     <ImageButton
         android:id="@+id/pictureBtn"
         android:layout_width="50dp"
@@ -42,16 +23,15 @@
         android:layout_height="50dp"
         android:background="@drawable/round_button_white"
         android:src="@drawable/ic_action_honk"
-        android:layout_below="@+id/settingsBtn"
-        android:layout_alignRight="@+id/cameraContent"/>
+        android:layout_below="@+id/goForwardBtn"
+        android:layout_toLeftOf="@+id/goForwardBtn"/>
 
     <ImageButton
         android:id="@+id/settingsBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignRight="@+id/cameraContent"
-        android:layout_alignTop="@+id/cameraContent"
         android:background="@drawable/round_button_white"
+        android:layout_alignParentRight="true"
         android:src="@drawable/ic_action_settings" />
 
     <ImageButton
@@ -88,16 +68,18 @@
         android:layout_height="50dp"
         android:background="@drawable/round_button_white"
         android:src="@drawable/ic_go_left"
-        android:layout_alignBottom="@+id/cameraContent"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        />
 
     <ImageButton
         android:id="@+id/doStopBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@drawable/round_button_white"
+        android:background="@drawable/round_button_red"
         android:layout_above="@+id/goBackwardBtn"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:cropToPadding="true"/>
 
     <TextView
         android:layout_width="wrap_content"

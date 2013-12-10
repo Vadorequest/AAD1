@@ -1,4 +1,4 @@
-package com.iha.wcc;
+package com.iha.wcc.job.camera;
 
 import java.io.IOException;
 
@@ -16,6 +16,10 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+/**
+ * View used to contain a video stream using Mjpeg format.
+ * Can contains another XML view and get its components.
+ */
 public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "MjpegView";
 
@@ -41,6 +45,9 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     private int dispHeight;
     private int displayMode;
 
+    /**
+     * Thread that manages the content displayed in the View.
+     */
     public class MjpegViewThread extends Thread {
         private SurfaceHolder mSurfaceHolder;
         private int frameCounter = 0;
@@ -149,6 +156,10 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Initialize the class.
+     * @param context Context of the current activity.
+     */
     private void init(Context context) {
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
@@ -166,6 +177,9 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         dispHeight = getHeight();
     }
 
+    /**
+     * Start the thread that display the content in the view.
+     */
     public void startPlayback() { 
         if(mInputStream != null) {
             mRun = true;
@@ -174,6 +188,9 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Used when the activity is paused to wait until it runs again.
+     */
     public void stopPlayback() { 
         mRun = false;
         boolean retry = true;
@@ -188,10 +205,23 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Compatibility method with super inherited components.
+     * @param context
+     * @param attrs
+     */
     public MjpegView(Context context, AttributeSet attrs) { 
-        super(context, attrs); init(context); 
+        super(context, attrs);
+        init(context);
     }
 
+    /**
+     * Redraw the content, useful when the surface to use changed, when the user user another position (horizontal/vertical) for instance.
+     * @param holder
+     * @param f
+     * @param w
+     * @param h
+     */
     public void surfaceChanged(SurfaceHolder holder, int f, int w, int h) { 
         thread.setSurfaceSize(w, h); 
     }
