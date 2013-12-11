@@ -107,14 +107,12 @@ void process(YunClient client) {
     if (command == "forward") {
       client.print(F("forward"));
       Serial.println("forward");  
-      rearWheels->run(RELEASE);// Stop turn to avoid infinite turn. (Application bug)
       frontWheels->setSpeed(speed);
       frontWheels->run(FORWARD);
     }
     else if (command == "backward") {
       client.print(F("backward"));
       Serial.println("backward"); 
-      rearWheels->run(RELEASE);// Stop turn to avoid infinite turn. (Application bug)
       frontWheels->setSpeed(speed);
       frontWheels->run(BACKWARD);
     }
