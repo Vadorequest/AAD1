@@ -34,6 +34,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.iha.wcc.job.car.Camera;
+import com.iha.wcc.job.car.Linino;
 import com.iha.wcc.job.ssh.SshTask;
 import com.iha.wcc.job.car.Car;
 
@@ -146,6 +148,11 @@ public class CarActivity extends FragmentActivity {
         }
     };
 
+    /**
+     * Shared preferences.
+     */
+    private SharedPreferences prefs;
+
     // View components.
     private MjpegView cameraContent;// Contains the view which contains all other components and the video stream.
     private ImageButton pictureBtn;// Take a picture.
@@ -175,6 +182,9 @@ public class CarActivity extends FragmentActivity {
         // Define a static context. Useful for the anonymous events.
         context = getApplicationContext();
 
+        // Get settings.
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         // Initialize view components.
         this.initializeComponents();
 
@@ -187,11 +197,12 @@ public class CarActivity extends FragmentActivity {
         // Initialize car network to reach. Settings will be updated when on the onStart() method.
         this.initializeCar(
                 // Use the pre-defined constant as default but try to get custom config if exists to configure the arduino to reach.
-                extras != null && extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
-                extras != null && extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
+                extras != null && extras.containsKey("ip") ? (String)extras.get("ip") : Linino.DEFAULT_NETWORK_IP,
+                extras != null && extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Linino.DEFAULT_NETWORK_PORT
         );
 
-        new SshTask(context, serverIpAddress, Car.DEFAULT_SSH_USER, Car.DEFAULT_SSH_PASSWORD, Car.COMMAND_START_CAMERA_STREAM).execute();
+        // Start the camera stream from the camera using SSH.
+        new SshTask(this.cameraContent, context, serverIpAddress, Linino.DEFAULT_SSH_USER, Linino.DEFAULT_SSH_PASSWORD, Camera.getCommand(prefs)).execute();
     }
 
     @Override
@@ -412,9 +423,6 @@ public class CarActivity extends FragmentActivity {
      * Get the car settings from the local phone settings and send them to the car.
      */
     private void initializeCarSettings(){
-        // Get settings.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         // Update android Car class settings.
         Car.setSettings(
                 Integer.parseInt(prefs.getString("speedAccelerationForward", String.valueOf(Car.getSpeedAccelerationForward()))),
@@ -447,7 +455,7 @@ public class CarActivity extends FragmentActivity {
             // Bind listeners once all components are initialized.
             this.initializeListeners();
         }
-        new MjpegVideoStreamTask(this.cameraContent).execute(Car.DEFAULT_CAMERA_STREAMING_URL);
+        new MjpegVideoStreamTask(this.cameraContent).execute(Camera.DEFAULT_CAMERA_STREAMING_URL);
     }
 
     /**
@@ -514,7 +522,7 @@ public class CarActivity extends FragmentActivity {
      * Send a request to the car to take a photo to store on the SD card.
      */
     private void doPhoto(){
-        new TakePictureTask(context).execute(Car.DEFAULT_CAMERA_PICTURE_URL);
+        new TakePictureTask(context).execute(Camera.DEFAULT_CAMERA_PICTURE_URL);
     }
 
     /**

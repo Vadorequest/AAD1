@@ -7,41 +7,6 @@ package com.iha.wcc.job.car;
 public class Car {
 
     /*
-     ******************************************* CONSTANTS - Linino *****************************************
-     */
-
-    /**
-     * Linino default IP address and port for its hotspot.
-     */
-    public final static String DEFAULT_NETWORK_IP = "192.168.240.1";
-    public final static int DEFAULT_NETWORK_PORT = 5555;
-
-    /**
-     * Linino default camera streaming address.
-     */
-    public final static String DEFAULT_CAMERA_STREAMING_URL = "http://"+DEFAULT_NETWORK_IP+":8080/?action=stream";
-
-    /**
-     * Linino default camera picture address.
-     */
-    public final static String DEFAULT_CAMERA_PICTURE_URL = "http://"+DEFAULT_NETWORK_IP+":8080/?action=snapshot";
-
-    /**
-     * Linino default user for SSH.
-     */
-    public final static String DEFAULT_SSH_USER = "root";
-
-    /**
-     * Linino default user password for SSH.
-     */
-    public final static String DEFAULT_SSH_PASSWORD = "20132013";
-
-    /**
-     * Command automatically executed when the program run.
-     */
-    public final static String COMMAND_START_CAMERA_STREAM = "mjpg_streamer -i \"input_uvc.so -d /dev/video0 -r 480x480\" -o \"output_http.so -p 8080 -w /mnt/share\"";
-
-    /*
      ******************************************* CONSTANTS - Car device settings *****************************************
      */
     /**

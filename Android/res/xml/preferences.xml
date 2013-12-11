@@ -6,7 +6,7 @@
     <PreferenceCategory android:title="Sound">
         <ListPreference android:key="sound_preferences" android:entries="@array/listDisplayTones" android:entryValues="@array/listReturnTone" android:title="@string/tones_list"/>
 
-    </PreferenceCategory>    
+    </PreferenceCategory>
     <PreferenceCategory android:title="General">
         <EditTextPreference android:key="speedAccelerationForward" android:title="@string/speedAccelerationForward" android:inputType="number" android:defaultValue="1"/>
         <EditTextPreference android:key="speedAccelerationBackward" android:title="@string/speedAccelerationBackward" android:inputType="number" android:defaultValue="1"/>
@@ -18,8 +18,12 @@
         <EditTextPreference android:key="maxSpeedForward" android:title="@string/maxSpeedForward" android:inputType="number" android:defaultValue="250"/>
         <EditTextPreference android:key="minSpeedBackward" android:title="@string/minSpeedBackward" android:inputType="number" android:defaultValue="25"/>
         <EditTextPreference android:key="maxSpeedBackward" android:title="@string/maxSpeedBackward" android:inputType="number" android:defaultValue="250"/>
-        <EditTextPreference android:key="speedTurnMotor" android:title="@string/speedTurnMotor" android:inputType="number" android:defaultValue="100"/>
+        <EditTextPreference android:key="speedTurnMotor" android:title="@string/speedTurnMotor" android:inputType="number" android:defaultValue="255"/>
 
-    </PreferenceCategory> 
-    
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Camera">
+        <EditTextPreference android:key="cameraWidth" android:title="@string/cameraWidth" android:inputType="number" android:defaultValue="1900"/>
+        <EditTextPreference android:key="cameraHeight" android:title="@string/cameraHeight" android:inputType="number" android:defaultValue="1200"/>
+    </PreferenceCategory>
+
 </PreferenceScreen>

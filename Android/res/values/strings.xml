@@ -24,5 +24,7 @@
     <string name="maxSpeedBackward">Maximal speed available for backward direction</string>
     <string name="speedTurnMotor">Speed to use when turning</string>
     <string name="tones_list">List of tones</string>
+    <string name="cameraWidth"><![CDATA[Camera width (Video & photo)]]></string>
+    <string name="cameraHeight"><![CDATA[Camera height (Video & photo)]]></string>
 
 </resources>

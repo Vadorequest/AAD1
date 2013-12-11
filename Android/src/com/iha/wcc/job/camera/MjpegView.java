@@ -2,6 +2,7 @@ package com.iha.wcc.job.camera;
 
 import java.io.IOException;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -15,6 +16,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
+import com.iha.wcc.CarActivity;
 
 /**
  * View used to contain a video stream using Mjpeg format.
@@ -143,7 +146,16 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                 }
                             } catch (IOException e) {
                                 e.getStackTrace();
-                                Log.d(TAG, "catch IOException hit in run", e);
+
+                                Log.d(TAG, "Camera disconnected.");
+
+                                // TODO find a way to display this **** message.
+                                /*((Activity)CarActivity.context).runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(CarActivity.context, "The camera is disconnected. Please restart the application.", Toast.LENGTH_LONG).show();
+                                    }
+                                });*/
+
                             }
                         }
                     } finally { 
@@ -231,7 +243,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         stopPlayback(); 
     }
 
-    public MjpegView(Context context) { 
+    public MjpegView(Context context) {
         super(context);
         init(context); 
     }

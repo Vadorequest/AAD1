@@ -1,8 +1,13 @@
 package com.iha.wcc.job.ssh;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
+import com.iha.wcc.CarActivity;
+import com.iha.wcc.job.camera.MjpegVideoStreamTask;
+import com.iha.wcc.job.camera.MjpegView;
+import com.iha.wcc.job.car.Camera;
 import com.jcraft.jsch.*;
 import java.util.Properties;
 
@@ -20,15 +25,19 @@ public class SshTask extends AsyncTask<String, Integer, Boolean> {
     private String password;
     private String command;
 
+    private MjpegView cameraContent;
+
     /**
      * Constructor that load the necessary information to connect using SSG protocol.
-     * @param context   Activity context, useful to display message.
-     * @param host      Host IP to reach.
-     * @param user      SSH user name.
-     * @param password  SSH user password.
-     * @param command   SSH command to execute.
+     * @param cameraContent
+     * @param context       Activity context, useful to display message.
+     * @param host          Host IP to reach.
+     * @param user          SSH user name.
+     * @param password      SSH user password.
+     * @param command       SSH command to execute.
      */
-    public SshTask(Context context, String host, String user, String password, String command){
+    public SshTask(MjpegView cameraContent, Context context, String host, String user, String password, String command){
+        this.cameraContent = cameraContent;
         this.context = context;
         this.host = host;
         this.user = user;
@@ -78,7 +87,7 @@ public class SshTask extends AsyncTask<String, Integer, Boolean> {
         if(success){
             Toast.makeText(this.context, "Video stream successfully started.", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(this.context, "Unable to start the camera video stream.", Toast.LENGTH_LONG).show();;
+            Toast.makeText(this.context, "Unable to start the camera video stream.", Toast.LENGTH_LONG).show();
         }
     }
 
