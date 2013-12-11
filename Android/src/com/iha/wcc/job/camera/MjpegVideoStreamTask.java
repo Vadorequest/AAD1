@@ -15,7 +15,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
  * Load the stream to an URL and set it to a MjpegView.
  */
 public class MjpegVideoStreamTask extends AsyncTask<String, Void, MjpegInputStream> {
-    public String TAG = "DoRead";
+    public String TAG = "MjpegVideoStreamTask";
 
     /**
      * The view to update with the loaded stream.

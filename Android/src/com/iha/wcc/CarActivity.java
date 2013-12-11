@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.iha.wcc.job.ssh.SshTask;
 import com.iha.wcc.job.car.Car;
 
 public class CarActivity extends FragmentActivity {
@@ -189,6 +190,8 @@ public class CarActivity extends FragmentActivity {
                 extras != null && extras.containsKey("ip") ? (String)extras.get("ip") : Car.DEFAULT_NETWORK_IP,
                 extras != null && extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Car.DEFAULT_NETWORK_PORT
         );
+
+        new SshTask(context, serverIpAddress, Car.DEFAULT_SSH_USER, Car.DEFAULT_SSH_PASSWORD, Car.COMMAND_START_CAMERA_STREAM).execute();
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.iha.wcc.job.car;
 
-import android.util.Log;
-
 /**
  * Class that represents the current controlled car.
  * Contains all values about it, manage the direction and the speed of the car for each user request.
@@ -28,8 +26,26 @@ public class Car {
      */
     public final static String DEFAULT_CAMERA_PICTURE_URL = "http://"+DEFAULT_NETWORK_IP+":8080/?action=snapshot";
 
+    /**
+     * Linino default user for SSH.
+     */
+    public final static String DEFAULT_SSH_USER = "root";
+
+    /**
+     * Linino default user password for SSH.
+     */
+    public final static String DEFAULT_SSH_PASSWORD = "20132013";
+
+    /**
+     * Command automatically executed when the program run.
+     */
+    public final static String COMMAND_START_CAMERA_STREAM = "mjpg_streamer -i \"input_uvc.so -d /dev/video0 -r 480x480\" -o \"output_http.so -p 8080 -w /mnt/share\"";
+
     /*
      ******************************************* CONSTANTS - Car device settings *****************************************
+     */
+    /**
+     * Tone frequency used as default value on the Arduino program. May change via the settings.
      */
     public final static int DEFAULT_TONE_FREQUENCY = 440;
 
