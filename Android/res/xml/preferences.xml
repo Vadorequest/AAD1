@@ -21,9 +21,10 @@
         <EditTextPreference android:key="speedTurnMotor" android:title="@string/speedTurnMotor" android:inputType="number" android:defaultValue="255"/>
 
     </PreferenceCategory>
-    <PreferenceCategory android:title="Camera">
+    <PreferenceCategory android:title="Camera (Need camera reset to be applied)">
         <EditTextPreference android:key="cameraWidth" android:title="@string/cameraWidth" android:inputType="number" android:defaultValue="1900"/>
         <EditTextPreference android:key="cameraHeight" android:title="@string/cameraHeight" android:inputType="number" android:defaultValue="1200"/>
+        <EditTextPreference android:key="cameraFps" android:title="@string/cameraFps" android:inputType="number" android:defaultValue="30"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

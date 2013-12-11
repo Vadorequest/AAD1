@@ -26,5 +26,6 @@
     <string name="tones_list">List of tones</string>
     <string name="cameraWidth"><![CDATA[Camera width (Video & photo)]]></string>
     <string name="cameraHeight"><![CDATA[Camera height (Video & photo)]]></string>
+    <string name="cameraFps">Video stream FPS</string>
 
 </resources>
