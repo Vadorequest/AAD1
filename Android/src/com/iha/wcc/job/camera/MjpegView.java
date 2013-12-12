@@ -156,6 +156,8 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                     }
                                 });*/
 
+                            }catch(NullPointerException e){
+                                e.getStackTrace();
                             }
                         }
                     } finally { 

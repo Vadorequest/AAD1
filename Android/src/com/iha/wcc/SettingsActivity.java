@@ -1,5 +1,6 @@
 package com.iha.wcc;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -61,4 +62,11 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 			p.setSummary(editTextPref.getText());
 		}
 	}
+
+    @Override
+    public void onBackPressed() {
+        Intent intentSettings = new Intent(this, CarActivity.class);
+        startActivity(intentSettings);
+        finish();
+    }
 }
