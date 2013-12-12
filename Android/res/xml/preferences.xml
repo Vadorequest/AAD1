@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="Photo">
-    	<EditTextPreference android:key="photo_storage" android:title="@string/photo_storage"/>
+    	<EditTextPreference android:key="photoStorage" android:title="@string/photoStorage" android:defaultValue="/WCC"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Sound">
-        <ListPreference android:key="sound_preferences" android:entries="@array/listDisplayTones" android:entryValues="@array/listReturnTone" android:title="@string/tones_list"/>
+        <ListPreference android:key="soundPreferences" android:entries="@array/listDisplayTones" android:entryValues="@array/listReturnTone" android:title="@string/tonesList"/>
 
     </PreferenceCategory>
     <PreferenceCategory android:title="General">

@@ -1,6 +1,12 @@
 package com.iha.wcc.job.car;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Camera embedded on the car, controlled by the Linino embedded Linux OS.
@@ -36,6 +42,16 @@ public class Camera {
      * Default FPS used for the camera stream.
      */
     public final static String DEFAULT_CAMERA_FPS = "30";
+
+    /**
+     * Default path used to store photos.
+     */
+    public final static String DEFAULT_PATH_PHOTO = "/WCC";
+
+    /**
+     * Default filename extension.
+     */
+    public final static String DEFAULT_FILENAME_EXT = "jpg";
 
     /*
      ******************************************* Methods - Public *****************************************
@@ -79,5 +95,35 @@ public class Camera {
      */
     public static String getCommand(SharedPreferences prefs){
         return "mjpg_streamer -i \"input_uvc.so -d /dev/video0 -f "+getCameraFps(prefs)+" -r "+getCameraWidth(prefs)+"*"+getCameraHeight(prefs)+"\" -o \"output_http.so -p 8080 -w /mnt/share\"";
+    }
+
+    /**
+     * Return the path where store the photo depending on the user preferences.
+     * @return Path where store the photo as File object.
+     */
+    public static File getPathPhoto(Context context, SharedPreferences prefs){
+        // Check if a the user defined his own path to store picture and check is the path is not empty.
+        if(isExternalStorageWritable()){
+            return new File(Environment.getExternalStorageDirectory().getAbsolutePath() + (prefs.getString("photoStorage", DEFAULT_PATH_PHOTO).length() > 0 ? prefs.getString("photoStorage", DEFAULT_PATH_PHOTO) : DEFAULT_PATH_PHOTO));
+        }else{
+            return context.getFilesDir();
+        }
+    }
+
+    /**
+     * Return the filename for a new photo.
+     * @return Filename of the picture.
+     */
+    public static String getFilenamePhoto(){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        return formatter.format(new Date()) + "." + DEFAULT_FILENAME_EXT;
+    }
+
+    /**
+     * Checks if external storage is available for read and write
+     * @return True if an external storage is writable.
+     */
+    public static boolean isExternalStorageWritable() {
+        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 }

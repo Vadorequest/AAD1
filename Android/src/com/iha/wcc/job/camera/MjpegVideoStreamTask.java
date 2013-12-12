@@ -12,7 +12,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
  * In charge of start the streaming from an URL.
- * Load the stream to an URL and set it to a MjpegView.
+ * Load the stream from an URL and set it to a MjpegView.
  */
 public class MjpegVideoStreamTask extends AsyncTask<String, Void, MjpegInputStream> {
     public String TAG = "MjpegVideoStreamTask";

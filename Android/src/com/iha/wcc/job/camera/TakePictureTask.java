@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+import com.iha.wcc.job.car.Camera;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -29,10 +30,8 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
     private Context context;
 
     /**
-     * Default filename extension.
+     * Debug tag.
      */
-    private String FILENAME_EXT = "jpg";
-
     private String TAG = "TakePictureTask";
 
     /**
@@ -59,12 +58,12 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
      */
     @Override
     protected void onPostExecute(Bitmap result) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-        Date now = new Date();
-        String filename = formatter.format(now) + "." + this.FILENAME_EXT;
+        String filename = Camera.getFilenamePhoto();
 
-        // Store the picture.
-        if(this.storeImage(result, "/" + filename)){
+        // Store the picture and get the full name.
+        filename = this.storeImage(result, "/" + filename);
+
+        if(filename != null){
             Toast.makeText(this.context, "Photo saved! ("+filename+")", Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(this.context, "The photo couldn't be saved!", Toast.LENGTH_LONG).show();
@@ -126,19 +125,19 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
      * Save the downloaded picture in the Android phone.
      * @param imageData The image to save.
      * @param filename The name of the image to save.
-     * @return Return true if the image was correctly saved.
+     * @return The entire path and name of the photo.
      */
-    private boolean storeImage(Bitmap imageData, String filename) {
+    private String storeImage(Bitmap imageData, String filename) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
-        String default_path = "/WIFICar";
-        String iconsStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath() + prefs.getString("photo_storage", default_path);
-        File sdIconStorageDir = new File(iconsStoragePath);
 
-        //Create storage directories, if nonexistent
-        sdIconStorageDir.mkdirs();
+        // Get the path where store photo.
+        File photo = Camera.getPathPhoto(this.context, prefs);
 
         try {
-            String filePath = sdIconStorageDir.toString() + filename;
+            // Create storage directories, if nonexistent
+            photo.mkdirs();
+
+            String filePath = photo.toString() + filename;
             FileOutputStream fileOutputStream = new FileOutputStream(filePath);
 
             BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
@@ -148,15 +147,14 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
             bos.flush();
             bos.close();
 
+            return filePath;
         } catch (FileNotFoundException e) {
             Log.w(TAG, "Error saving image file: " + e.getMessage());
-            return false;
+            return null;
 
         } catch (IOException e) {
             Log.w(TAG, "Error saving image file: " + e.getMessage());
-            return false;
+            return null;
         }
-
-        return true;
     }
 }

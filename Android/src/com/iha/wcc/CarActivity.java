@@ -154,7 +154,7 @@ public class CarActivity extends FragmentActivity {
     private SharedPreferences prefs;
 
     // View components.
-    private MjpegView cameraContent;// Contains the view which contains all other components and the video stream.
+    private MjpegView cameraContent;// Contains the Mjpeg view which contains all other components and the video stream.
     private ImageButton pictureBtn;// Take a picture.
     private ImageButton honkBtn;// Play a sound.
     private ImageButton settingsBtn;// Go to settings.
@@ -212,7 +212,7 @@ public class CarActivity extends FragmentActivity {
             socketThread = new Thread(networkRunnable);
             socketThread.start();
         }
-        // Load or reload the car settings.
+        // Load or reload the car settings. TODO Reload only if they was changed, not every time.
         this.initializeCarSettings();
 
         // Start to stream the video.
@@ -330,7 +330,7 @@ public class CarActivity extends FragmentActivity {
                 if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE){
                     goLeft();
                 }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    stopTurn();
+                    doStopTurn();
                 }
 
                 return false;
@@ -346,7 +346,7 @@ public class CarActivity extends FragmentActivity {
                 if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE){
                     goRight();
                 }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    stopTurn();
+                    doStopTurn();
                 }
                 return false;
             }
@@ -438,12 +438,11 @@ public class CarActivity extends FragmentActivity {
                 Integer.parseInt(prefs.getString("speedTurnMotor", String.valueOf(Car.getSpeedTurnMotor()))));
 
         // Update arduino Car device settings without updating the view.
-        this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)), false);
+        this.send("settings", Car.speed + "/" + prefs.getString("soundPreferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)), false);
     }
 
     /**
      * Start the video streaming.
-     * If the cameraContent is null (typically the Activity was closed before) then all the view will be refreshed.
      */
     private void startStreaming() {
         if(this.cameraContent == null){
@@ -507,8 +506,8 @@ public class CarActivity extends FragmentActivity {
     /**
      * Send a request to the car to stop turn.
      */
-    private void stopTurn(){
-        send("stopTurn");
+    private void doStopTurn(){
+        send("doStopTurn");
     }
 
     /**
