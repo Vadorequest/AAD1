@@ -35,7 +35,6 @@ public class MjpegInputStream extends DataInputStream {
      * @param sequence
      * @return
      * @throws IOException
-     * @TODO Exception here sometimes for unknown reasons, maybe a thread still alive because the app wasn't killed properly.
      */
     private int getEndOfSequence(DataInputStream in, byte[] sequence) throws IOException {
         int seqIndex = 0;

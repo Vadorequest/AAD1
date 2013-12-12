@@ -212,7 +212,7 @@ public class CarActivity extends FragmentActivity {
             socketThread = new Thread(networkRunnable);
             socketThread.start();
         }
-        // Load or reload the car settings. TODO Reload only if they was changed, not every time.
+        // Load or reload the car settings.
         this.initializeCarSettings();
 
         // Start to stream the video.
@@ -438,7 +438,7 @@ public class CarActivity extends FragmentActivity {
                 Integer.parseInt(prefs.getString("speedTurnMotor", String.valueOf(Car.getSpeedTurnMotor()))));
 
         // Update arduino Car device settings without updating the view.
-        this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)), false);// TODO: Add more settings, later.
+        this.send("settings", Car.speed + "/" + prefs.getString("sound_preferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)), false);
     }
 
     /**
