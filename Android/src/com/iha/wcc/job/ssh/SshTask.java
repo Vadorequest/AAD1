@@ -86,6 +86,7 @@ public class SshTask extends AsyncTask<String, Integer, Boolean> {
     protected void onPostExecute(Boolean success){
         if(success){
             Toast.makeText(this.context, "Video stream successfully started.", Toast.LENGTH_SHORT).show();
+            CarActivity.videoStreamStarted = true;
         }else{
             Toast.makeText(this.context, "Unable to start the camera video stream.", Toast.LENGTH_LONG).show();
         }

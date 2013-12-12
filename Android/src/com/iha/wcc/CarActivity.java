@@ -47,6 +47,11 @@ public class CarActivity extends FragmentActivity {
     public static Context context;
 
     /**
+     * Don't re-run start video stream when one is done, it's useless.
+     */
+    public static boolean videoStreamStarted;
+
+    /**
      * Tag used to debug.
      */
     private final static String TAG_DEBUG = ">==< ArduinoYun >==<";
@@ -87,10 +92,6 @@ public class CarActivity extends FragmentActivity {
      * Runnable running in another thread, responsible to the communication with the car.
      */
     private final Runnable networkRunnable = new Runnable() {
-
-
-
-
         @Override
         public void run() {
             log("starting network thread");
@@ -202,7 +203,9 @@ public class CarActivity extends FragmentActivity {
         );
 
         // Start the camera stream from the camera using SSH.
-        new SshTask(this.cameraContent, context, serverIpAddress, Linino.DEFAULT_SSH_USER, Linino.DEFAULT_SSH_PASSWORD, Camera.getCommand(prefs)).execute();
+        if(!videoStreamStarted){
+            new SshTask(this.cameraContent, context, serverIpAddress, Linino.DEFAULT_SSH_USER, Linino.DEFAULT_SSH_PASSWORD, Camera.getCommand(prefs)).execute();
+        }
     }
 
     @Override
@@ -247,6 +250,13 @@ public class CarActivity extends FragmentActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.car, menu);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Start the video stream next time the application is ran.
+        videoStreamStarted = false;
+        this.finish();
     }
 
     /**
@@ -542,6 +552,7 @@ public class CarActivity extends FragmentActivity {
         // Load the settings interface.
         Intent intentSettings = new Intent(this, SettingsActivity.class);
         startActivity(intentSettings);
+        this.finish();
     }
 
     /**
