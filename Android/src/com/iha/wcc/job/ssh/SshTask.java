@@ -88,7 +88,7 @@ public class SshTask extends AsyncTask<String, Integer, Boolean> {
             Toast.makeText(this.context, "Video stream successfully started.", Toast.LENGTH_SHORT).show();
             CarActivity.videoStreamStarted = true;
         }else{
-            Toast.makeText(this.context, "Unable to start the camera video stream.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this.context, "Unable to start the camera video stream. Are you connected to the Arduino Wi-Fi network?", Toast.LENGTH_LONG).show();
         }
     }
 

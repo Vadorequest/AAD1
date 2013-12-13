@@ -89,7 +89,7 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
             final int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode != HttpStatus.SC_OK) {
-                Log.w("ImageDownloader", "Error " + statusCode +
+                Log.w(TAG, "Error " + statusCode +
                         " while retrieving bitmap from " + url);
                 return null;
             }
@@ -150,10 +150,16 @@ public class TakePictureTask extends AsyncTask<String, Void, Bitmap> {
             return filePath;
         } catch (FileNotFoundException e) {
             Log.w(TAG, "Error saving image file: " + e.getMessage());
+            Toast.makeText(this.context, "Unable to take a picture. " + e.getMessage(), Toast.LENGTH_LONG).show();
             return null;
 
         } catch (IOException e) {
             Log.w(TAG, "Error saving image file: " + e.getMessage());
+            Toast.makeText(this.context, "Unable to take a picture. " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return null;
+
+        } catch(NullPointerException e){
+            Toast.makeText(this.context, "Unable to take a picture. " + e.getMessage(), Toast.LENGTH_LONG).show();
             return null;
         }
     }

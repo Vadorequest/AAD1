@@ -464,7 +464,7 @@ public class CarActivity extends FragmentActivity {
             // Bind listeners once all components are initialized.
             this.initializeListeners();
         }
-        new MjpegVideoStreamTask(this.cameraContent).execute(Camera.DEFAULT_CAMERA_STREAMING_URL);
+        new MjpegVideoStreamTask(context, this.cameraContent).execute(Camera.DEFAULT_CAMERA_STREAMING_URL);
     }
 
     /**

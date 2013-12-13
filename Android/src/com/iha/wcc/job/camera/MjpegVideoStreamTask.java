@@ -3,11 +3,14 @@ package com.iha.wcc.job.camera;
 import java.io.IOException;
 import java.net.URI;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
@@ -23,10 +26,16 @@ public class MjpegVideoStreamTask extends AsyncTask<String, Void, MjpegInputStre
     private MjpegView camera;
 
     /**
+     * Context useful for the Toasts.
+     */
+    private Context context;
+
+    /**
      * Constructor to define a custom view.
      * @param camera View that will be updated once the HTTP request will be done.
      */
-    public MjpegVideoStreamTask(MjpegView camera){
+    public MjpegVideoStreamTask(Context context, MjpegView camera){
+        this.context = context;
         this.camera = camera;
     }
 
@@ -73,7 +82,8 @@ public class MjpegVideoStreamTask extends AsyncTask<String, Void, MjpegInputStre
             camera.setDisplayMode(MjpegView.SIZE_BEST_FIT);
             camera.showFps(true);
         }else{
-            Log.d(TAG, "The URL called doesn't have stream content.");
+            Log.d(TAG, "Unable to get a video stream, are you connected on the Arduino network? Be sure the camera is running.");
+            Toast.makeText(this.context, "Unable to get a video stream, are you connected on the Arduino network? Be sure the camera is running.", Toast.LENGTH_LONG).show();
         }
     }
 }
