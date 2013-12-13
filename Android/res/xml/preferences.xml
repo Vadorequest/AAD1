@@ -3,10 +3,11 @@
     <PreferenceCategory android:title="Photo">
     	<EditTextPreference android:key="photoStorage" android:title="@string/photoStorage" android:defaultValue="/WCC"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="Sound">
         <ListPreference android:key="soundPreferences" android:entries="@array/listDisplayTones" android:entryValues="@array/listReturnTone" android:title="@string/tonesList"/>
-
     </PreferenceCategory>
+
     <PreferenceCategory android:title="General">
         <EditTextPreference android:key="speedAccelerationForward" android:title="@string/speedAccelerationForward" android:inputType="number" android:defaultValue="1"/>
         <EditTextPreference android:key="speedAccelerationBackward" android:title="@string/speedAccelerationBackward" android:inputType="number" android:defaultValue="1"/>
@@ -19,12 +20,19 @@
         <EditTextPreference android:key="minSpeedBackward" android:title="@string/minSpeedBackward" android:inputType="number" android:defaultValue="25"/>
         <EditTextPreference android:key="maxSpeedBackward" android:title="@string/maxSpeedBackward" android:inputType="number" android:defaultValue="250"/>
         <EditTextPreference android:key="speedTurnMotor" android:title="@string/speedTurnMotor" android:inputType="number" android:defaultValue="255"/>
-
     </PreferenceCategory>
+
     <PreferenceCategory android:title="Camera (Need camera reset to be applied)">
         <EditTextPreference android:key="cameraWidth" android:title="@string/cameraWidth" android:inputType="number" android:defaultValue="1900"/>
         <EditTextPreference android:key="cameraHeight" android:title="@string/cameraHeight" android:inputType="number" android:defaultValue="1200"/>
         <EditTextPreference android:key="cameraFps" android:title="@string/cameraFps" android:inputType="number" android:defaultValue="30"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Linino (Linux)">
+        <EditTextPreference android:key="ipNetwork" android:title="@string/ipNetwork" android:defaultValue="192.168.240.1"/>
+        <EditTextPreference android:key="portNetwork" android:title="@string/portNetwork" android:inputType="number" android:defaultValue="5555"/>
+        <EditTextPreference android:key="userSsh" android:title="@string/userSsh" android:defaultValue="root"/>
+        <EditTextPreference android:key="passwordSsh" android:title="@string/passwordSsh" android:defaultValue="20132013"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

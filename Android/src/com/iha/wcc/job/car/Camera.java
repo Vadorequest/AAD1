@@ -3,6 +3,8 @@ package com.iha.wcc.job.car;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
+import com.iha.wcc.CarActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -21,12 +23,12 @@ public class Camera {
     /**
      * Linino default camera streaming address.
      */
-    public final static String DEFAULT_CAMERA_STREAMING_URL = "http://"+Linino.DEFAULT_NETWORK_IP+":8080/?action=stream";
+    public final static String DEFAULT_CAMERA_STREAMING_URL = "http://"+Linino.getNetworkIp(PreferenceManager.getDefaultSharedPreferences(CarActivity.context))+":8080/?action=stream";
 
     /**
      * Linino default camera picture address.
      */
-    public final static String DEFAULT_CAMERA_PICTURE_URL = "http://"+Linino.DEFAULT_NETWORK_IP+":8080/?action=snapshot";
+    public final static String DEFAULT_CAMERA_PICTURE_URL = "http://"+Linino.getNetworkIp(PreferenceManager.getDefaultSharedPreferences(CarActivity.context))+":8080/?action=snapshot";
 
     /**
      * Default width used for the camera stream.

@@ -103,15 +103,12 @@ public class CarActivity extends FragmentActivity {
                 e1.printStackTrace();
                 stopProcessingSocket.set(true);
                 log("UnknownHostException");
-            } catch(ConnectException e){
+            } catch(final ConnectException e){// Final because we need it in the runnable.
                 runOnUiThread(new Runnable(){
                     public void run(){
                         // Warn the user because the connection is wrong.
-                        Toast.makeText(
-                                context,
-                                "Unable to connect to the car, are you sure to be connected on the car network? Typically 192.168.240.1, you are connected at "+serverIpAddress,
-                                Toast.LENGTH_LONG
-                        ).show();
+                        Toast.makeText(context, "Unable to connect to the car, are you sure to be connected on the car network?" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Typically "+Linino.DEFAULT_NETWORK_IP+":"+Linino.DEFAULT_NETWORK_PORT+", you are connected at "+serverIpAddress+":"+serverPort, Toast.LENGTH_LONG).show();
                     }
                 });
                 stopProcessingSocket.set(true);
@@ -197,14 +194,13 @@ public class CarActivity extends FragmentActivity {
 
         // Initialize car network to reach. Settings will be updated when on the onStart() method.
         this.initializeCar(
-                // Use the pre-defined constant as default but try to get custom config if exists to configure the arduino to reach.
-                extras != null && extras.containsKey("ip") ? (String)extras.get("ip") : Linino.DEFAULT_NETWORK_IP,
-                extras != null && extras.containsKey("port") ? Integer.parseInt((String)extras.get("port")) : Linino.DEFAULT_NETWORK_PORT
+                Linino.getNetworkIp(prefs),
+                Linino.getNetworkPort(prefs)
         );
 
         // Start the camera stream from the camera using SSH.
         if(!videoStreamStarted){
-            new SshTask(this.cameraContent, context, serverIpAddress, Linino.DEFAULT_SSH_USER, Linino.DEFAULT_SSH_PASSWORD, Camera.getCommand(prefs)).execute();
+            new SshTask(this.cameraContent, context, serverIpAddress, Linino.getUserSsh(prefs), Linino.getPasswordSsh(prefs), Camera.getCommand(prefs)).execute();
         }
     }
 

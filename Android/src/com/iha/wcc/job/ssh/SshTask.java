@@ -27,6 +27,8 @@ public class SshTask extends AsyncTask<String, Integer, Boolean> {
 
     private MjpegView cameraContent;
 
+    private String exceptionMessage;
+
     /**
      * Constructor that load the necessary information to connect using SSG protocol.
      * @param cameraContent
@@ -74,6 +76,7 @@ public class SshTask extends AsyncTask<String, Integer, Boolean> {
             return true;
         } catch (JSchException e) {
             e.printStackTrace();
+            this.exceptionMessage = e.getMessage();
             return false;
         }
     }
@@ -88,12 +91,13 @@ public class SshTask extends AsyncTask<String, Integer, Boolean> {
             Toast.makeText(this.context, "Video stream successfully started.", Toast.LENGTH_SHORT).show();
             CarActivity.videoStreamStarted = true;
         }else{
-            Toast.makeText(this.context, "Unable to start the camera video stream. Are you connected to the Arduino Wi-Fi network?", Toast.LENGTH_LONG).show();
+            Toast.makeText(this.context, "Unable to start the camera video stream." + this.exceptionMessage, Toast.LENGTH_LONG).show();
         }
     }
 
     /**
      * Shutdown the camera video stream.
+     * TODO: Maybe use it, I don't know, it's complicated because the thread need to be open to the camera stream. I tried to close it but don't looks to have any effect. Need more tests...
      */
     public static void disconnect(){
         if(SshTask.session != null){

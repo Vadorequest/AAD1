@@ -26,5 +26,9 @@
     <string name="cameraWidth"><![CDATA[Camera width (Video & photo)]]></string>
     <string name="cameraHeight"><![CDATA[Camera height (Video & photo)]]></string>
     <string name="cameraFps">Video stream FPS</string>
+    <string name="passwordSsh">SSH user password</string>
+    <string name="userSsh">SSH user name</string>
+    <string name="portNetwork">Server port</string>
+    <string name="ipNetwork">Server IP address</string>
 
 </resources>
