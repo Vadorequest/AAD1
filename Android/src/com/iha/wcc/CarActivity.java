@@ -119,6 +119,9 @@ public class CarActivity extends FragmentActivity {
 
             queriesQueueSocket.clear(); // we only want new values
 
+            // Initialize once the thread is running.
+            initializeCarSettings();
+
             try {
                 while(!stopProcessingSocket.get()){
                     String val = queriesQueueSocket.take();
@@ -211,8 +214,6 @@ public class CarActivity extends FragmentActivity {
             socketThread = new Thread(networkRunnable);
             socketThread.start();
         }
-        // Load or reload the car settings. TODO Reload only if they was changed, not every time.
-        this.initializeCarSettings();
 
         // Start to stream the video.
         this.startStreaming();
@@ -445,6 +446,7 @@ public class CarActivity extends FragmentActivity {
 
         // Update arduino Car device settings without updating the view.
         this.send("settings", Car.speed + "/" + prefs.getString("soundPreferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)), false);
+        Log.d("ArduinoYun", prefs.getString("soundPreferences", String.valueOf(Car.DEFAULT_TONE_FREQUENCY)));
     }
 
     /**
