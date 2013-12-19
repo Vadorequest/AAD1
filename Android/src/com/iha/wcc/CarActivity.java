@@ -164,6 +164,7 @@ public class CarActivity extends FragmentActivity {
     private ImageButton goLeftBtn;
     private ImageButton goRightBtn;
     private ImageButton doStopBtn;
+    private ImageButton doStopTurnBtn;
     private TextView speedText;// Displays the current speed.
     private ImageView sensView;// Displays the current sens.
 
@@ -268,6 +269,7 @@ public class CarActivity extends FragmentActivity {
         this.goLeftBtn = (ImageButton) findViewById(R.id.goLeftBtn);
         this.goRightBtn = (ImageButton) findViewById(R.id.goRightBtn);
         this.doStopBtn = (ImageButton) findViewById(R.id.doStopBtn);
+        this.doStopTurnBtn = (ImageButton) findViewById(R.id.doStopTurnBtn);
         this.speedText = (TextView) findViewById(R.id.speedText);
         this.sensView = (ImageView) findViewById(R.id.sensView);
     }
@@ -366,6 +368,15 @@ public class CarActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 doStop();
+            }
+        });
+        /*
+        ******** Stop turn **********
+        */
+        this.doStopTurnBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doStopTurn();
             }
         });
 
@@ -515,7 +526,7 @@ public class CarActivity extends FragmentActivity {
      * Send a request to the car to stop turn.
      */
     private void doStopTurn(){
-        send("doStopTurn");
+        send("stopTurn");
     }
 
     /**

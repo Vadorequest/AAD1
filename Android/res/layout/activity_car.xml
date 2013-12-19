@@ -102,4 +102,13 @@
         android:layout_toLeftOf="@+id/speedText"
         android:src="@drawable/ic_going_forward" />
 
+    <ImageButton
+        android:id="@+id/doStopTurnBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_button_red"
+        android:cropToPadding="true"
+        android:layout_marginLeft="40dp"
+        android:layout_alignTop="@+id/honkBtn"/>
+
 </RelativeLayout>
