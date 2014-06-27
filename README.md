@@ -20,6 +20,9 @@ git clone https://github.com/Vadorequest/AAD1.git "Wifi controlled car"
 
 Will create the directory **Wifi controlled car** in the project folder with all the sources. (And documentation)
 
+If you want to have more information, you can also read the thread on the *Arduino forum*:
+http://forum.arduino.cc/index.php?topic=198060.0
+
 If you have questions, create an issue, here: [ISSUES](https://github.com/Vadorequest/AAD1/issues)
 
 ***Source code, documentation and all documents on the GIT repository are free for personal/teaching usage.***
